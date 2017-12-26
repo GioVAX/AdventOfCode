@@ -15,6 +15,7 @@ void Main()
 //		};
 
 	var registers = new Dictionary<string, int>();
+	var max = 0;
 	
 	foreach (var instr in input)
 	{
@@ -22,9 +23,12 @@ void Main()
 
 		if( CheckCondition( parts[1], registers ))
 			ExecuteCmd(parts[0], registers);
+		
+		max = Math.Max( max, registers.Max(r => r.Value ));
 	}
 
-	registers.Max(r => r.Value ).Dump();
+	$"Step 1: {registers.Max(r => r.Value)}".Dump();
+	$"Step 2: {max}".Dump();
 }
 
 bool CheckCondition(string expr, Dictionary<string, int> registers)
