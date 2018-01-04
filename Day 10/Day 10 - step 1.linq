@@ -10,14 +10,20 @@ void Main()
 	var skip_size = 0;
 	var nodes = Enumerable.Range(0, 255).ToArray();
 	
-	var lengths = new List<int>( new int [] { 3,4,1,5 });
+	var lengths = 
+//		new int[] { 3, 4, 1, 5 }; // Test TO BE DONE ON 5 ELEMENTS-- Expected answer -> 12
+		new int[] { 18, 1, 0, 161, 255, 137, 254, 252, 14, 95, 165, 33, 181, 168, 2, 188 };
 	
 	foreach( var len in lengths ) {
-	
 		reverseNodes( nodes, current_pos, len );
 		
 		current_pos = (current_pos + len + skip_size) % nodes.Length;
 		++skip_size;
+		
+//		nodes.ToList().Dump();
+//		current_pos.Dump();
+//		skip_size.Dump();
+//		"".Dump();
 	}
 	
 	(nodes[0] * nodes[1]).Dump();
@@ -25,15 +31,20 @@ void Main()
 
 void reverseNodes(int[] nodes, int begin, int len)
 {
-	for( var i = 0; i < (len +1)/ 2; ++i )
+	var endBase = begin + len - 1;
+	for( var i = 0; i < len/ 2; ++i )
 	{
 		begin = (begin + i) % nodes.Length;
-		var end = (begin + len - i) %nodes.Length;
+		var end = (endBase - i) % nodes.Length;
 		
-		nodes[begin] ^= nodes[end];
-		nodes[end] ^= nodes[begin];
-		nodes[begin] ^= nodes[end];
+		var tmp = nodes[begin];
+		nodes[begin] = nodes[end];
+		nodes[end] = tmp;
+		
+//		nodes[begin] ^= nodes[end];
+//		nodes[end] ^= nodes[begin];
+//		nodes[begin] ^= nodes[end];
 
-		++begin;
+//		++begin;
 	}
 }

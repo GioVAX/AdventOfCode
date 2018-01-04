@@ -11,9 +11,13 @@ enum Mode {
 
 void Main()
 {
-	var input = "{{<a!>},{<a!>},{<ab>}}";
+	var input = 
+		File.ReadAllLines( @"C:\Users\pezzinog\Documents\LINQPad Queries\AdventOfCode2017\Day 09\Input.txt")[0];
+//		"{{<a!>},{<a!>},{<ab>}}"; // Test -- Expected result --> 3
+	
 	int level = 0;
 	int total = 0;
+	int nonCancelled = 0;
 	Mode mode = Mode.Normal;
 	int chr = 0;
 
@@ -49,12 +53,12 @@ void Main()
 					rdr.Read();
 					break;
 				default:
+					++nonCancelled;
 					break;
 			}
 		}
 	}
 	
-	total.Dump();
+	total.Dump(); // Step 1
+	nonCancelled.Dump(); // Step 2
 }
-
-// Define other methods and classes here

@@ -4,11 +4,13 @@
   <Namespace>LinqToExcel</Namespace>
 </Query>
 
-class Path {
-	public int StartPoint {get;set;}
-	public IEnumerable<int> Connections {get;set;}
-	
-	public Path( int start, IEnumerable<int> conns ){
+class Path
+{
+	public int StartPoint { get; set; }
+	public IEnumerable<int> Connections { get; set; }
+
+	public Path(int start, IEnumerable<int> conns)
+	{
 		StartPoint = start;
 		Connections = conns;
 	}
@@ -16,46 +18,45 @@ class Path {
 
 void Main()
 {
-	var input = 
-		new List<string> {
-			"0 <-> 2",
-			"1 <-> 1",
-			"2 <-> 0, 3, 4",
-			"3 <-> 2, 4",
-			"4 <-> 2,3,6",
-			"5 <-> 6",
-			"6 <-> 4, 5"
-		};
-		
+	var input =
+		File.ReadAllLines( @"C:\Users\pezzinog\Documents\LINQPad Queries\AdventOfCode2017\Day 12\Input.txt").ToList();
+//		new List<string> {
+//			"0 <-> 2",
+//			"1 <-> 1",
+//			"2 <-> 0, 3, 4",
+//			"3 <-> 2, 4",
+//			"4 <-> 2,3,6",
+//			"5 <-> 6",
+//			"6 <-> 4, 5"
+//		}; // Expected result -> 6
+
 	var connected = new bool[input.Count];
 	var starting_point = 0;
-	
+
 	var network = input.Select(c =>
 	{
 		var x = c.Split(new string[] { "<->" }, StringSplitOptions.RemoveEmptyEntries);
-		return new Path( int.Parse(x[0]),
+		return new Path(int.Parse(x[0]),
 			x[1].Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(i => int.Parse(i)));
-	}).ToList();
+	}).ToArray();
 
-	FollowConnections( new int[] { network[starting_point].StartPoint}.ToList(), network, connected );
+	var nodesQueue = new Queue<int>();
+	nodesQueue.Enqueue(network[starting_point].StartPoint);
 
-	connected.Dump();
+	FollowConnections(nodesQueue, network, connected);
+
+	connected.Count(c => c ).Dump();
 }
 
-void FollowConnections(List<int> expand, List<Path> network, bool[] connected)
+void FollowConnections(Queue<int> expand, Path[] network, bool[] connected)
 {
-	if( expand.Count== 0 )
-		return;
+	var step = expand.Dequeue();
 
-	var step = expand.First();
-	expand.RemoveAt( 0 );
+	connected[step] = true;
+	network[step].Connections
+		.Where(c => !connected[c]).ToList()
+		.ForEach(conn => expand.Enqueue(conn));
 
-	if (!connected[step])
-	{
-		connected[step] = true;
-		expand.AddRange(network[step].Connections);
-	}
-
-	FollowConnections( expand, network, connected );
+	if (expand.Any())
+		FollowConnections(expand, network, connected);
 }
-
