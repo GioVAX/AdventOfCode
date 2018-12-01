@@ -56,17 +56,18 @@ let answ1 = List.sum freqChanges;;
 // +7, +7, -2, -7, -4 first reaches 14 twice.
 
 // What is the first frequency your device reaches twice?
-let findRepetition (currFreq:int) changsList =
-    let rec findRepetition' met (currFreq:int) changes = 
+let findRepetition initFreq changesList =
+    let rec findRep alreadyMet currFreq changes = 
         match changes with
-        | [] -> findRepetition' met currFreq changsList
+        | [] -> findRep alreadyMet currFreq changesList
         | chg::rest -> 
             let newFreq = chg + currFreq
-            // printf "%i " newFreq
-            if Set.contains newFreq met then 
+            if Set.contains newFreq alreadyMet then 
                 Some newFreq 
-                else findRepetition' (Set.add newFreq met) newFreq rest
-    findRepetition' (Set.empty.Add(0)) currFreq changsList;;
+                else findRep (Set.add newFreq alreadyMet) newFreq rest
+
+    let initSet = Set.empty.Add initFreq
+    findRep initSet initFreq changesList;;
 
 let testAnsw1 = findRepetition 0 [+1; -1];;
 let testAnsw2 = findRepetition  0 [+3; +3; +4; -2; -4];;
