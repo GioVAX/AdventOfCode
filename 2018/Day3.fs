@@ -1404,11 +1404,30 @@ let claims = claimsString |> Seq.map claimParse;;
 let claimPoints claim =
     let range1 = [claim.topLeft.left..claim.topLeft.left+claim.size.width-1]
     let range2 = [claim.topLeft.top..claim.topLeft.top+claim.size.height-1]
-    range1 |> List.collect (fun x -> range2 |> List.map (fun y -> x, y))
-let duplicatedPoints = claims 
-                        |> Seq.collect claimPoints
-                        |> Seq.countBy (fun p -> p) 
-                        |> Seq.filter (fun p -> (snd p) > 1);;
+    range1 |> List.collect (fun x -> range2 |> List.map (fun y -> x, y));;
+let allPointsCounted = claims |> 
+                            (Seq.collect claimPoints 
+                            >> Seq.countBy (fun p -> p));;
 
-Seq.length duplicatedPoints |> printfn "%i" ;;
+let groupedPoints = Seq.groupBy ( fun p -> (snd p) = 1) allPointsCounted;;
+let overlappedPoints = groupedPoints |> Seq.find (fun gp -> (fst gp) = false) |> snd;;
 
+Seq.length overlappedPoints |> printfn "%i" ;;
+
+// Amidst the chaos, you notice that exactly one claim doesn't overlap by even a single square inch of fabric with any other claim. 
+// If you can somehow draw attention to it, maybe the Elves will be able to make Santa's suit after all!
+
+// For example, in the claims above, only claim 3 is intact after all claims are made.
+
+// What is the ID of the only claim that doesn't overlap?
+let uniquePoints = groupedPoints
+                    |> Seq.find (fun gp -> fst gp) 
+                    |> snd 
+                    |> Seq.map fst
+                    |> Set.ofSeq;;
+
+claims |> Seq.find 
+            (fun c -> 
+                let points = Set.ofSeq (claimPoints c)
+                Set.isProperSubset points uniquePoints
+            );;
