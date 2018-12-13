@@ -1218,8 +1218,8 @@ let (|WakesUp|_|) description : WakesUp option =
     | _ -> None
 let parseEvent event =
     match event with
-    | BeginShift shift -> Some (XBeginShift shift)
-    | FallsAsleep falls -> Some (XFallsAsleep falls)
-    | WakesUp wakes -> Some (XWakesUp wakes)
-    | _ -> None
+    | BeginShift shift -> XBeginShift shift
+    | FallsAsleep falls -> XFallsAsleep falls
+    | WakesUp wakes -> XWakesUp wakes
+    | _ -> invalidArg event "cannot parse"
 let events = guardLogs |> Seq.map parseEvent
