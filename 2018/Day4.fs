@@ -1184,7 +1184,7 @@ type FallsAsleep = {
 type WakesUp = { 
     date: DateTime
 }
-type Event = 
+type ElfEvent = 
     | XBeginShift of BeginShift
     | XFallsAsleep of FallsAsleep
     | XWakesUp of WakesUp
@@ -1222,4 +1222,22 @@ let parseEvent event =
     | FallsAsleep falls -> XFallsAsleep falls
     | WakesUp wakes -> XWakesUp wakes
     | _ -> invalidArg event "cannot parse"
-let events = guardLogs |> Seq.map parseEvent
+let extractDate (event:ElfEvent) =
+    match event with
+    | XBeginShift {date=date} -> date
+    | XFallsAsleep {date=date} -> date
+    | XWakesUp {date=date} -> date
+let events = guardLogs |> Seq.map parseEvent |> Seq.sortBy extractDate
+let correctSequence (ev1, ev2) =
+    match (ev1, ev2) with
+    | (XBeginShift _, XFallsAsleep _) 
+    | (XBeginShift _, XBeginShift _) 
+    | (XFallsAsleep _, XWakesUp _) 
+    | (XWakesUp _, XFallsAsleep _) 
+    | (XWakesUp _, XBeginShift _) -> true
+    | otherwise -> false
+let sanityChecks events =
+    events |> Seq.pairwise |> Seq.forall correctSequence
+    ||
+    events |> Seq.map extractDate |> Seq.forall (fun dt -> dt.Hour = 0 || dt.Hour = 23)
+
