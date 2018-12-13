@@ -1174,18 +1174,20 @@ let guardLogs = Array.toSeq [|
     "[1518-07-05 00:13] wakes up";
     "[1518-07-24 23:47] Guard #163 begins shift" |]
 
-type BeginShift = { x: int }
-type FallsAsleep = { y: int }
-type WakesUp = { z: int }
-type EventType = 
-    | BeginShift of BeginShift
-    | FallsAsleep of FallsAsleep
-    | WakesUp of WakesUp
-type Event = {
+type BeginShift = { 
     date: DateTime
-    guardId: int option
-    eventType: EventType
+    guardId: int
 }
+type FallsAsleep = { 
+    date: DateTime
+}
+type WakesUp = { 
+    date: DateTime
+}
+type Event = 
+    | XBeginShift of BeginShift
+    | XFallsAsleep of FallsAsleep
+    | XWakesUp of WakesUp
 let groupsToSeq (groups:GroupCollection) = 
     seq { let i = groups.GetEnumerator() in while i.MoveNext() do yield i.Current } 
     |> Seq.cast<Group> 
@@ -1199,32 +1201,25 @@ let (|Regex|_|) pattern input =
     let m = Regex.Match(input, pattern)
     if m.Success then Some(m.Groups |> getSuccessufulMatches)
     else None
+let toDateTime str =
+    snd  (DateTime.TryParseExact(str, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None))
 let (|BeginShift|_|) description =
     match description with
-    | Regex "Guard #(\d*) begins shift" [guard] -> Some (int guard)
+    | Regex @"\[(.*)\] Guard #(\d*) begins shift" [date; guard] 
+        -> Some { guardId = int guard; date = toDateTime date }
     | _ -> None
 let (|FallsAsleep|_|) description : FallsAsleep option =
     match description with
-    | Regex "falls asleep" [] -> Some (FallsAsleep {y = 1})
+    | Regex @"\[(.*)\] falls asleep" [date] -> Some (FallsAsleep {date = toDateTime date})
     | _ -> None
 let (|WakesUp|_|) description : WakesUp option =
     match description with
-    | Regex "wakes up" [] -> Some (WakesUp {z = 1})
-    | _ -> None
-let (|EventDateTime|_|) str =
-    match DateTime.TryParseExact(str, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None) with
-    | true, dt -> Some(dt)
+    | Regex @"\[(.*)\] wakes up" [date] -> Some (WakesUp {date = toDateTime date})
     | _ -> None
 let parseEvent event =
     match event with
-    | Regex @"\[(.*)\] (.*)" [day; rest] ->
-        match (day, rest) with
-        | (EventDateTime date, BeginShift guard)
-            -> Some { guardId = Some guard; date = date; eventType = BeginShift {x=1}}
-        | (EventDateTime date, FallsAsleep _) 
-            -> Some { guardId = None; date = date; eventType = FallsAsleep{y=1}}
-        | (EventDateTime date, WakesUp _) 
-            -> Some { guardId = None; date = date; eventType = WakesUp {z=1}}
-        | (_,_) -> raise (InvalidCastException event)
+    | BeginShift shift -> Some (XBeginShift shift)
+    | FallsAsleep falls -> Some (XFallsAsleep falls)
+    | WakesUp wakes -> Some (XWakesUp wakes)
     | _ -> None
 let events = guardLogs |> Seq.map parseEvent
