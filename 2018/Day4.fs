@@ -1290,8 +1290,17 @@ let processEvent acc event =
     | XWakesUp {date=date} -> {acc with totals = updateTotals acc.currentGuard acc.startOfNap date.Minute acc.totals }
 
 let accumulator = {currentGuard = 0; startOfNap = 0; totals = Map.ofList [(0, [|0|] )]}
-let totals = events |> Seq.fold processEvent accumulator
+let totals = (events |> Seq.fold processEvent accumulator).totals |> Map.toArray |> Array.filter (fun (k,v) -> k <> 0)
 
-let sleepyGuard = totals.totals |> Map.toSeq |> Seq.sortByDescending (fun (k, v) -> Array.sum v) |> Seq.head 
+let sleepyGuard = totals |> Array.maxBy (fun (k, v) -> Array.sum v) 
 
 printfn "%i" ((fst sleepyGuard) * (snd sleepyGuard |> Array.indexed |> Array.maxBy snd |> fst ))
+
+// Strategy 2: Of all guards, which guard is most frequently asleep on the same minute?
+
+// In the example above, Guard #99 spent minute 45 asleep more than any other guard or minute - three times in total. (In all other cases, any guard spent any minute asleep at most twice.)
+
+// What is the ID of the guard you chose multiplied by the minute you chose? (In the above example, the answer would be 99 * 45 = 4455.)
+
+let mostFrequent = totals |> Array.map (fun (g, m) -> (g, m |> Array.indexed |> Array.maxBy snd )) |> Array.maxBy ( snd >> snd )
+printfn "%i" ((fst mostFrequent) * (snd mostFrequent |> fst))
