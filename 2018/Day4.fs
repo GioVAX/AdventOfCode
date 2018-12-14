@@ -54,6 +54,7 @@
 open System
 open System.Globalization
 open System.Text.RegularExpressions
+
 let guardLogs = Array.toSeq [|
     "[1518-08-08 00:45] falls asleep";
     "[1518-05-02 00:52] falls asleep";
@@ -1178,56 +1179,70 @@ type BeginShift = {
     date: DateTime
     guardId: int
 }
+
 type FallsAsleep = { 
     date: DateTime
 }
+
 type WakesUp = { 
     date: DateTime
 }
+
 type ElfEvent = 
     | XBeginShift of BeginShift
     | XFallsAsleep of FallsAsleep
     | XWakesUp of WakesUp
+
 let groupsToSeq (groups:GroupCollection) = 
     seq { let i = groups.GetEnumerator() in while i.MoveNext() do yield i.Current } 
     |> Seq.cast<Group> 
+
 let getSuccessufulMatches =
        groupsToSeq
     >> Seq.tail
     >> Seq.filter (fun g -> g.Success)
     >> Seq.map (fun g -> g.Value)
     >> List.ofSeq
+
 let (|Regex|_|) pattern input =
     let m = Regex.Match(input, pattern)
     if m.Success then Some(m.Groups |> getSuccessufulMatches)
     else None
+
 let toDateTime str =
     snd  (DateTime.TryParseExact(str, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None))
+
 let (|BeginShift|_|) description =
     match description with
     | Regex @"\[(.*)\] Guard #(\d*) begins shift" [date; guard] 
         -> Some { guardId = int guard; date = toDateTime date }
     | _ -> None
+
 let (|FallsAsleep|_|) description : FallsAsleep option =
     match description with
     | Regex @"\[(.*)\] falls asleep" [date] -> Some (FallsAsleep {date = toDateTime date})
     | _ -> None
+
 let (|WakesUp|_|) description : WakesUp option =
     match description with
     | Regex @"\[(.*)\] wakes up" [date] -> Some (WakesUp {date = toDateTime date})
     | _ -> None
+
 let parseEvent event =
     match event with
     | BeginShift shift -> XBeginShift shift
     | FallsAsleep falls -> XFallsAsleep falls
     | WakesUp wakes -> XWakesUp wakes
     | _ -> invalidArg event "cannot parse"
+
 let extractDate (event:ElfEvent) =
     match event with
     | XBeginShift {date=date} -> date
     | XFallsAsleep {date=date} -> date
     | XWakesUp {date=date} -> date
+
 let events = guardLogs |> Seq.map parseEvent |> Seq.sortBy extractDate
+
 let correctSequence (ev1, ev2) =
     match (ev1, ev2) with
     | (XBeginShift _, XFallsAsleep _) 
@@ -1236,8 +1251,47 @@ let correctSequence (ev1, ev2) =
     | (XWakesUp _, XFallsAsleep _) 
     | (XWakesUp _, XBeginShift _) -> true
     | otherwise -> false
-let sanityChecks events =
-    events |> Seq.pairwise |> Seq.forall correctSequence
-    ||
-    events |> Seq.map extractDate |> Seq.forall (fun dt -> dt.Hour = 0 || dt.Hour = 23)
 
+let checkHour event =
+    match event with
+    | XBeginShift _ -> true
+    | XWakesUp {date=date}
+    | XFallsAsleep {date=date} -> date.Hour = 0
+let sanityChecks events =
+    (events 
+        |> Seq.pairwise 
+        |> Seq.forall correctSequence)
+    || (events 
+        |> Seq.map extractDate 
+        |> Seq.forall (fun dt -> dt.Hour = 0 || dt.Hour = 23))
+    || (events 
+        |> Seq.forall checkHour)
+
+type Accumulator = {
+    currentGuard: int
+    startOfNap: int
+    totals: Map<int, int[]>
+}
+
+let updateArray startNap endNap (array: int[]) =
+    array.[startNap..endNap] <- (array.[startNap..endNap] |> Array.map ((+) 1))
+    array
+
+let updateTotals guard startOfNap endNap (totals:Map<int, int[]>) =
+    match totals.TryFind guard with
+    | Some a -> updateArray startOfNap endNap a |> ignore
+                totals
+    | None -> totals.Add (guard, updateArray startOfNap endNap (Array.replicate 60 0))
+
+let processEvent acc event =
+    match event with
+    | XBeginShift {guardId=guard} -> {acc with currentGuard = guard; startOfNap = 0}
+    | XFallsAsleep {date=date} -> {acc with  startOfNap = date.Minute}
+    | XWakesUp {date=date} -> {acc with totals = updateTotals acc.currentGuard acc.startOfNap date.Minute acc.totals }
+
+let accumulator = {currentGuard = 0; startOfNap = 0; totals = Map.ofList [(0, [|0|] )]}
+let totals = events |> Seq.fold processEvent accumulator
+
+let sleepyGuard = totals.totals |> Map.toSeq |> Seq.sortByDescending (fun (k, v) -> Array.sum v) |> Seq.head 
+
+printfn "%i" ((fst sleepyGuard) * (snd sleepyGuard |> Array.indexed |> Array.maxBy snd |> fst ))
