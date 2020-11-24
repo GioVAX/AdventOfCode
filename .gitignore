@@ -1,1 +1,7 @@
 .vs
+
+.fake
+.ionide
+
+bin
+obj
