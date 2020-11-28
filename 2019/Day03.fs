@@ -8,25 +8,71 @@ let wire1Path =
 let wire2Path = 
     ["L1003";"U22";"R594";"D241";"L215";"D906";"R733";"D831";"L556";"U421";"L780";"D242";"R183";"U311";"R46";"D52";"R124";"D950";"L18";"U985";"R999";"D528";"R850";"U575";"L138";"D62";"L603";"U467";"R641";"U155";"L165";"D63";"L489";"U4";"R635";"D460";"L446";"D938";"R983";"U494";"L491";"D433";"L722";"U427";"L469";"U832";"L712";"U798";"R906";"U804";"R646";"U721";"R578";"D194";"L726";"U803";"L985";"D934";"R943";"U198";"R726";"U341";"R583";"U998";"L992";"D401";"L132";"D681";"L363";"U949";"L814";"D977";"R840";"D145";"L177";"D291";"L652";"D396";"R330";"D951";"L363";"U813";"R847";"D374";"R961";"D912";"R516";"D178";"R495";"U49";"R340";"D395";"R632";"D991";"R487";"D263";"R320";"D948";"R456";"D142";"L783";"D888";"R589";"D999";"L159";"U686";"R402";"D586";"L425";"U946";"R56";"D979";"L534";"U313";"R657";"D401";"L666";"D504";"R712";"D232";"L557";"D620";"R193";"D670";"L134";"D975";"R837";"D901";"R813";"U459";"L499";"U450";"L87";"U84";"L582";"U310";"R795";"D280";"L730";"D458";"L727";"D196";"R95";"U210";"R498";"U760";"R778";"U325";"R715";"U479";"R275";"U557";"L450";"D196";"L60";"U115";"R475";"D265";"L611";"D372";"R60";"U935";"L717";"U809";"L344";"D854";"L386";"U473";"R72";"U968";"L816";"U900";"R866";"U172";"R965";"U383";"R576";"D774";"R753";"U788";"L781";"D237";"L401";"U786";"R873";"U331";"R609";"D232";"L603";"U685";"L494";"U177";"L982";"D173";"L673";"U772";"L7";"U7";"R517";"U573";"R212";"D413";"L124";"D810";"L223";"U137";"L576";"U95";"R128";"U896";"L91";"U932";"L875";"U917";"R106";"U911";"L208";"D507";"L778";"D59";"L71";"D352";"R988";"U708";"L58";"D429";"L122";"U771";"L713";"D801";"R188";"U661";"R752";"D374";"R312";"D848";"L504";"D540";"R334";"U517";"R343";"D739";"L727";"D552";"L555";"U580";"L857";"U474";"R145";"U188";"L789";"U698";"R735";"U131";"L494";"U162";"L27";"D849";"L140";"D849";"R615";"U798";"R160";"U492";"R884";"U521";"L542";"D729";"R498";"D853";"R918";"U565";"R65";"U32";"L607";"U552";"L38";"D822";"L77";"U490";"L190";"D93";"L104";"U268";"R702";"D112";"L917";"D876";"L631";"D139";"L989";"U810";"R329";"U253";"L498";"D767";"L550";"U666";"L549";"U616";"R376"]
 
-let manhattanDistance (x1, y1) (x2, y2) =
-    let x = if x1 > x2 then x1 - x2 else x2 - x1
-    let y = if y1 > y2 then y1 - y2 else y2 - y1
-    x + y
-
 type Direction =
     | Right
     | Left
     | Up
     | Down
 
+type Point =
+    Point of (int * int)
+
+type Offset =
+    Offset of (Direction * int)
+
+let manhattanDistance (Point(x1, y1)) (Point(x2, y2)) =
+    let x = if x1 > x2 then x1 - x2 else x2 - x1
+    let y = if y1 > y2 then y1 - y2 else y2 - y1
+    x + y
+
 let parseMove (move:string) =
     match move.[0] with
-    | 'R' -> (Right, move.[1..] |> int)
-    | 'L' -> (Left, move.[1..] |> int)
-    | 'U' -> (Up, move.[1..] |> int)
-    | 'D' -> (Down, move.[1..] |> int)
+    | 'R' -> Offset (Right, move.[1..] |> int)
+    | 'L' -> Offset (Left, move.[1..] |> int)
+    | 'U' -> Offset (Up, move.[1..] |> int)
+    | 'D' -> Offset (Down, move.[1..] |> int)
     | _ -> failwith "Unknown direction"
 
+let offset (Point (x,y)) = function 
+    | Offset (Up, o) -> Point(x, y-o)
+    | Offset (Down, o) -> Point(x, y+o)
+    | Offset (Left, o) -> Point(x-o, y)
+    | Offset (Right, o) -> Point(x+o, y)
+
+let walkOffset (Point(x,y)) = function
+    | Offset (Up, o) -> 
+        [ for i in y-o..y -> Point(x,i) ]
+    | Offset (Down, o) -> 
+        [ for i in y..y+o -> Point(x,i) ]
+    | Offset (Left, o) -> 
+        [ for i in x-o..x -> Point(i,y) ]
+    | Offset (Right, o) -> 
+        [ for i in x..x+o -> Point(i,y) ]
+
+let rec walkPath (Point(x,y)) = function
+    | [] -> []
+    | (Offset (_, 0))::os -> walkPath (Point(x,y)) os
+    | (Offset (Up, o))::os -> 
+        let origin' = Point(x,y-1)
+        let os' = (Offset(Up,o-1))::os
+        origin'::(walkPath origin' os')
+    | (Offset (Down, o))::os -> 
+        let origin' = Point(x,y+1)
+        let os' = (Offset(Down,o-1))::os
+        origin'::(walkPath origin' os')
+    | (Offset (Left, o))::os -> 
+        let origin' = Point(x-1,y)
+        let os' = (Offset(Left,o-1))::os
+        origin'::(walkPath origin' os')
+    | (Offset (Right, o))::os -> 
+        let origin' = Point(x+1,y)
+        let os' = (Offset(Right,o-1))::os
+        origin'::(walkPath origin' os')
+
+let closestIntersection origin points =
+    points
+    |> List.minBy (manhattanDistance origin)
+    
 let result1 =
     1
     
@@ -35,9 +81,10 @@ let result2 =
 
 [<Fact>]
 let ``manhattanDistance test`` () =
-    let ps = [(3,3); (-3,3); (3,-3); (-3,-3)]
+    let ps = [Point(3,3); Point(-3,3); Point(3,-3); Point(-3,-3)]
+    let origin = Point (0,0)
 
-    let res = List.map (manhattanDistance (0,0)) ps
+    let res = List.map (manhattanDistance origin) ps
 
     res |> should matchList [6;6;6;6]
 
@@ -46,11 +93,59 @@ let ``parseMove test`` () =
     let w1 = ["R8";"U5";"L5";"D3"]
 
     let res = w1 |> List.map parseMove
-    res |> should matchList [(Right,8); (Up, 5); (Left, 5); (Down, 3)]
+    res |> should matchList [Offset(Right,8); Offset(Up, 5); Offset(Left, 5); Offset(Down, 3)]
 
-//     let w2 = ["U7";"R6";"D4";"L4"]
+[<Fact>]
+let ``offset test`` () =
+    let p = offset (Point (0,0)) (Offset(Up, 7))
 
-//     let res = closestIntersection w1 w2
+    p|> should equal (Point(0,-7))
 
-//     res |> manhattanDistance (0,0)
-//     |> should equal 6
+[<Fact>]
+let ``walkOffset test`` () =
+    let o = Offset(Up, 7)
+    // ["U7";"R6";"D4";"L4"]
+
+    let ps = walkOffset (Point(1,1)) o
+
+    ps |> should matchList [for i in -6..1 -> Point(1,i)]
+
+[<Fact>]
+let ``walkPath test`` () =
+    let path = ["U7";"R6";"D4";"L4"]
+    let offsets = path |> List.map parseMove
+
+    let ps = walkPath (Point(0,0)) offsets
+
+    let expected = 
+        [
+            (0,-1);(0,-2);(0,-3);(0,-4);(0,-5);(0,-6);(0,-7);
+            (1,-7);(2,-7);(3,-7);(4,-7);(5,-7);(6,-7);
+            (6,-6);(6,-5);(6,-4);(6,-3);
+            (5,-3);(4,-3);(3,-3);(2,-3)
+        ] |> List.map Point
+
+    ps |> should matchList expected
+
+[<Fact>]
+let ``First test`` () =
+    let w1 = ["R8";"U5";"L5";"D3"]
+    let w2 = ["U7";"R6";"D4";"L4"]
+    let origin = Point (0,0)
+
+    let ps1 = 
+        w1
+        |> List.map parseMove
+        |> walkPath origin
+        |> Set.ofList
+
+    let common =
+        w2
+        |> List.map parseMove
+        |> walkPath origin
+        |> List.filter (fun p -> ps1 |> Set.contains p)
+
+    let res = common |> closestIntersection origin 
+
+    res |> manhattanDistance origin
+    |> should equal 6
