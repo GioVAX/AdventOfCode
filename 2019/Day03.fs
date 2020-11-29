@@ -39,40 +39,30 @@ let offset (Point (x,y)) = function
     | Offset (Left, o) -> Point(x-o, y)
     | Offset (Right, o) -> Point(x+o, y)
 
-let walkOffset (Point(x,y)) = function
-    | Offset (Up, o) -> 
-        [ for i in y-o..y -> Point(x,i) ]
-    | Offset (Down, o) -> 
-        [ for i in y..y+o -> Point(x,i) ]
-    | Offset (Left, o) -> 
-        [ for i in x-o..x -> Point(i,y) ]
-    | Offset (Right, o) -> 
-        [ for i in x..x+o -> Point(i,y) ]
-
-let rec walkPath (Point(x,y)) = function
+let rec walkPath (Point(x,y) as origin) = function
     | [] -> []
     | (Offset (_, 0))::os -> walkPath (Point(x,y)) os
-    | (Offset (Up, o))::os -> 
-        let origin' = Point(x,y-1)
-        let os' = (Offset(Up,o-1))::os
-        origin'::(walkPath origin' os')
-    | (Offset (Down, o))::os -> 
-        let origin' = Point(x,y+1)
-        let os' = (Offset(Down,o-1))::os
-        origin'::(walkPath origin' os')
-    | (Offset (Left, o))::os -> 
-        let origin' = Point(x-1,y)
-        let os' = (Offset(Left,o-1))::os
-        origin'::(walkPath origin' os')
-    | (Offset (Right, o))::os -> 
-        let origin' = Point(x+1,y)
-        let os' = (Offset(Right,o-1))::os
+    | (Offset (d, o))::os ->
+        let origin' = offset origin (Offset(d,1))
+        let os' = (Offset(d,o-1))::os
         origin'::(walkPath origin' os')
 
 let closestIntersection origin points =
     points
     |> List.minBy (manhattanDistance origin)
-    
+
+let computeIntersections walk1 walk2 origin =
+    let ps1 = 
+        walk1
+        |> List.map parseMove
+        |> walkPath origin
+        |> Set.ofList
+
+    walk2
+        |> List.map parseMove
+        |> walkPath origin
+        |> List.filter (fun p -> ps1 |> Set.contains p)
+
 let result1 =
     1
     
@@ -102,15 +92,6 @@ let ``offset test`` () =
     p|> should equal (Point(0,-7))
 
 [<Fact>]
-let ``walkOffset test`` () =
-    let o = Offset(Up, 7)
-    // ["U7";"R6";"D4";"L4"]
-
-    let ps = walkOffset (Point(1,1)) o
-
-    ps |> should matchList [for i in -6..1 -> Point(1,i)]
-
-[<Fact>]
 let ``walkPath test`` () =
     let path = ["U7";"R6";"D4";"L4"]
     let offsets = path |> List.map parseMove
@@ -128,22 +109,12 @@ let ``walkPath test`` () =
     ps |> should matchList expected
 
 [<Fact>]
-let ``First test`` () =
+let ``First example test`` () =
     let w1 = ["R8";"U5";"L5";"D3"]
     let w2 = ["U7";"R6";"D4";"L4"]
     let origin = Point (0,0)
 
-    let ps1 = 
-        w1
-        |> List.map parseMove
-        |> walkPath origin
-        |> Set.ofList
-
-    let common =
-        w2
-        |> List.map parseMove
-        |> walkPath origin
-        |> List.filter (fun p -> ps1 |> Set.contains p)
+    let common = computeIntersections w1 w2 origin
 
     let res = common |> closestIntersection origin 
 
