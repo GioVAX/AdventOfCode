@@ -118,5 +118,35 @@ let ``First example test`` () =
 
     let res = common |> closestIntersection origin 
 
-    res |> manhattanDistance origin
-    |> should equal 6
+    res 
+        |> manhattanDistance origin
+        |> should equal 6
+    
+[<Fact>]
+let ``Second example test`` () =
+    let w1 = ["R75";"D30";"R83";"U83";"L12";"D49";"R71";"U7";"L72"]
+    let w2 = ["U62";"R66";"U55";"R34";"D71";"R55";"D58";"R83"]
+    let origin = Point (0,0)
+
+    let common = computeIntersections w1 w2 origin
+
+    let res = common |> closestIntersection origin 
+
+    res 
+        |> manhattanDistance origin
+        |> should equal 159
+
+    
+[<Fact>]
+let ``Third example test`` () =
+    let w1 = ["R98";"U47";"R26";"D63";"R33";"U87";"L62";"D20";"R33";"U53";"R51"]
+    let w2 = ["U98";"R91";"D20";"R16";"D67";"R40";"U7";"R15";"U6";"R7"]
+    let origin = Point (0,0)
+
+    let common = computeIntersections w1 w2 origin
+
+    let res = common |> closestIntersection origin 
+
+    res 
+        |> manhattanDistance origin
+        |> should equal 135
