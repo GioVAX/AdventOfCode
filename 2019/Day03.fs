@@ -33,7 +33,7 @@ let parseMove (move:string) =
     | 'D' -> Offset (Down, move.[1..] |> int)
     | _ -> failwith "Unknown direction"
 
-let walkOffset (Point(x,y)) = function 
+let pointsOffset (Point(x,y)) = function 
     | Offset (Up, o) -> 
         (Point(x,y-o), [for i in y-1.. -1..y-o -> Point(x, i)])
     | Offset (Down, o) ->
@@ -43,16 +43,24 @@ let walkOffset (Point(x,y)) = function
     | Offset (Right, o) ->
         (Point(x+o,y), [for i in x+1..x+o -> Point(i,y)])
 
-let walkPath origin offs = 
-    let rec loop start offsets =
-        match offsets with
-        | [] -> []
-        | o::os ->
-            let (arrival, points) = walkOffset start o
-            points::loop arrival os
+// let pointsPath origin offs = 
+//     let rec loop start offsets =
+//         match offsets with
+//         | [] -> []
+//         | o::os ->
+//             let (arrival, points) = pointsOffset start o
+//             points::loop arrival os
 
-    loop origin offs
-    |> List.concat
+//     loop origin offs
+//     |> List.concat
+
+let pointsPath origin = 
+    List.fold
+        (fun (org, l) off ->
+            let (arrival,points) = pointsOffset org off
+            (arrival, points |> List.append l))
+        (origin,[])
+    >> snd
 
 let closestIntersection origin  =
     List.minBy (manhattanDistance origin)
@@ -61,12 +69,12 @@ let computeIntersections walk1 walk2 origin =
     let ps1 = 
         walk1
         |> List.map parseMove
-        |> walkPath origin
+        |> pointsPath origin
         |> Set.ofList
 
     walk2
         |> List.map parseMove
-        |> walkPath origin
+        |> pointsPath origin
         |> List.filter (fun p -> ps1 |> Set.contains p)
 
 let result1 =
@@ -97,11 +105,11 @@ let ``parseMove test`` () =
     res |> should matchList [Offset(Right,8); Offset(Up, 5); Offset(Left, 5); Offset(Down, 3)]
 
 [<Fact>]
-let ``walkPath test`` () =
+let ``pointsPath test`` () =
     let path = ["U7";"R6";"D4";"L4"]
     let offsets = path |> List.map parseMove
 
-    let ps = walkPath (Point(0,0)) offsets
+    let ps = pointsPath (Point(0,0)) offsets
 
     let expected = 
         [
