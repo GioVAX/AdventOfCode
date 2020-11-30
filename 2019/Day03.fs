@@ -33,23 +33,29 @@ let parseMove (move:string) =
     | 'D' -> Offset (Down, move.[1..] |> int)
     | _ -> failwith "Unknown direction"
 
-let offset (Point (x,y)) = function 
-    | Offset (Up, o) -> Point(x, y-o)
-    | Offset (Down, o) -> Point(x, y+o)
-    | Offset (Left, o) -> Point(x-o, y)
-    | Offset (Right, o) -> Point(x+o, y)
+let walkOffset (Point(x,y)) = function 
+    | Offset (Up, o) -> 
+        (Point(x,y-o), [for i in y-1.. -1..y-o -> Point(x, i)])
+    | Offset (Down, o) ->
+        (Point(x,y+o), [for i in y+1..y+o -> Point(x, i)])
+    | Offset (Left, o) ->
+        (Point(x-o,y), [for i in x-1.. -1..x-o -> Point(i,y)])
+    | Offset (Right, o) ->
+        (Point(x+o,y), [for i in x+1..x+o -> Point(i,y)])
 
-let rec walkPath (Point(x,y) as origin) = function
-    | [] -> []
-    | (Offset (_, 0))::os -> walkPath (Point(x,y)) os
-    | (Offset (d, o))::os ->
-        let origin' = offset origin (Offset(d,1))
-        let os' = (Offset(d,o-1))::os
-        origin'::(walkPath origin' os')
+let walkPath origin offs = 
+    let rec loop start offsets =
+        match offsets with
+        | [] -> []
+        | o::os ->
+            let (arrival, points) = walkOffset start o
+            points::loop arrival os
 
-let closestIntersection origin points =
-    points
-    |> List.minBy (manhattanDistance origin)
+    loop origin offs
+    |> List.concat
+
+let closestIntersection origin  =
+    List.minBy (manhattanDistance origin)
 
 let computeIntersections walk1 walk2 origin =
     let ps1 = 
@@ -64,7 +70,12 @@ let computeIntersections walk1 walk2 origin =
         |> List.filter (fun p -> ps1 |> Set.contains p)
 
 let result1 =
-    1
+    let origin = Point (0,0)
+    
+    origin
+    |> computeIntersections wire1Path wire2Path
+    |> closestIntersection origin 
+    |> manhattanDistance origin
     
 let result2 =
     2
@@ -84,12 +95,6 @@ let ``parseMove test`` () =
 
     let res = w1 |> List.map parseMove
     res |> should matchList [Offset(Right,8); Offset(Up, 5); Offset(Left, 5); Offset(Down, 3)]
-
-[<Fact>]
-let ``offset test`` () =
-    let p = offset (Point (0,0)) (Offset(Up, 7))
-
-    p|> should equal (Point(0,-7))
 
 [<Fact>]
 let ``walkPath test`` () =
