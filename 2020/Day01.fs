@@ -207,7 +207,6 @@ let data = [
     1560
 ]
 
-
 let findCouple target list =
     let rec loop l1 l2 =
         match (l1, l2) with
@@ -222,44 +221,45 @@ let findCouple target list =
 
     loop data' data''
 
-let x target data =
-    let res =        
-        data
-        |> findCouple target
 
-    match res with
-    | None -> failwith "No couple found"
-    | Some (f1, f2) -> (f1, f2)
+let rec findTriple target = function
+    | [] -> None
+    | n::ns ->
+        match findCouple (target-n) ns with
+        | Some(f1, f2) -> Some(n, f1, f2)
+        | None -> findTriple target ns
 
 let result1 =
-    let (f1, f2) = x 2020 data
-    f1 * f2
+    match findCouple 2020 data with
+    | None -> failwith "No couple found"
+    | Some (f1, f2) -> 
+        f1 * f2
     
-// let result2 =
-//     2
+let result2 =
+    match findTriple 2020 data with
+    | None -> failwith "No triple found"
+    | Some (f1, f2, f3) -> f1 * f2 * f3
 
 [<Fact>]
 let ``Puzzle 1 - example case`` () =
     let data = [1721;979;366;299;675;1456]
-
-    let (f1, f2) = x 2020 data
-
+   
+    let (f1, f2) =
+        match findCouple 2020 data with
+        | None -> failwith "No couple found"
+        | Some (f1, f2) -> (f1, f2)
+    
     f1 + f2 |> should equal 2020
     f1 * f2 |> should equal 514579
 
-// [<Fact>]
-// let ``Puzzle 2 - example case`` () =
-//     let rec loop = function
-//         | [] -> failwith "No triple"
-//         | n::ns -> 
-    
-//     let data = [1721;979;366;299;675;1456]
+[<Fact>]
+let ``Puzzle 2 - example case`` () =
+    let data = [1721;979;366;299;675;1456]
 
+    let (f1, f2, f3) =
+        match findTriple 2020 data with
+        | None -> failwith "No triple found"
+        | Some (f1, f2, f3) -> (f1, f2, f3)
 
-
-//     let (f1, f2) =
-//         data
-//         |> findCouple 2020
-
-//     f1 + f2 |> should equal 2020
-//     f1 * f2 |> should equal 514579
+    f1 + f2 + f3 |> should equal 2020
+    f1 * f2 * f3 |> should equal 241861950
