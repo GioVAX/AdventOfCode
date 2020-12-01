@@ -212,32 +212,54 @@ let findCouple target list =
     let rec loop l1 l2 =
         match (l1, l2) with
         | ([], _)
-        | (_, []) -> failwith "nothing found"
-        | (h1::t1,h2::t2) when h1 + h2 = target -> (h1, h2)
-        | (h1::t1,h2::t2) when h1 + h2 > target -> loop l1 t2
-        | (h1::t1,h2::t2) when h1 + h2 < target -> loop t1 l2
+        | (_, []) -> None
+        | (h1::_,h2::_) when h1 + h2 = target -> Some (h1, h2)
+        | (h1::_,h2::t2) when h1 + h2 > target -> loop l1 t2
+        | (h1::t1,h2::_) when h1 + h2 < target -> loop t1 l2
 
     let data' = List.sort list
     let data'' = List.rev data'
 
     loop data' data''
 
-let result1 =
-    let (f1, f2) =
+let x target data =
+    let res =        
         data
-        |> findCouple 2020
+        |> findCouple target
+
+    match res with
+    | None -> failwith "No couple found"
+    | Some (f1, f2) -> (f1, f2)
+
+let result1 =
+    let (f1, f2) = x 2020 data
     f1 * f2
     
 // let result2 =
 //     2
 
 [<Fact>]
-let ``Simple test`` () =
+let ``Puzzle 1 - example case`` () =
     let data = [1721;979;366;299;675;1456]
 
-    let (f1, f2) =
-        data
-        |> findCouple 2020
+    let (f1, f2) = x 2020 data
 
     f1 + f2 |> should equal 2020
     f1 * f2 |> should equal 514579
+
+// [<Fact>]
+// let ``Puzzle 2 - example case`` () =
+//     let rec loop = function
+//         | [] -> failwith "No triple"
+//         | n::ns -> 
+    
+//     let data = [1721;979;366;299;675;1456]
+
+
+
+//     let (f1, f2) =
+//         data
+//         |> findCouple 2020
+
+//     f1 + f2 |> should equal 2020
+//     f1 * f2 |> should equal 514579
