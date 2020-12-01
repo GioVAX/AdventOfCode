@@ -5,11 +5,10 @@ let data = [ 1472; 1757; 1404; 1663; 1365; 1974; 1649; 1489; 1795; 1821; 1858; 1
 let findCouple target list =
     let rec loop l1 l2 =
         match (l1, l2) with
-        | ([], _)
-        | (_, []) -> None
+        | ([], _) | (_, []) -> None
         | (h1::_,h2::_) when h1 + h2 = target -> Some (h1, h2)
         | (h1::_,h2::t2) when h1 + h2 > target -> loop l1 t2
-        | (h1::t1,h2::_) when h1 + h2 < target -> loop t1 l2
+        | (h1::t1,h2::_) (*when h1 + h2 < target*) -> loop t1 l2
 
     let data' = List.sort list
     let data'' = List.rev data'
@@ -26,8 +25,7 @@ let rec findTriple target = function
 let result1 =
     match findCouple 2020 data with
     | None -> failwith "No couple found"
-    | Some (f1, f2) -> 
-        f1 * f2
+    | Some (f1, f2) -> f1 * f2
     
 let result2 =
     match findTriple 2020 data with
