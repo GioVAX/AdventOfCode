@@ -4,8 +4,8 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Template.fs" />
     <Compile Include="Day01.fs" />
+    <Compile Include="Day01Tests.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="fsunit.xunit" Version="4.0.2" />
