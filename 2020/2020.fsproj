@@ -8,6 +8,8 @@
     <Compile Include="Day01Tests.fs" />
     <Compile Include="Day02.fs" />
     <Compile Include="Day02Tests.fs" />
+    <Compile Include="Day03.fs" />
+    <Compile Include="Day03Tests.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="fsunit.xunit" Version="4.0.2" />
