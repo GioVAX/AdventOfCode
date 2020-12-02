@@ -28,8 +28,26 @@ let parse s =
         Pwd = matched.Groups.["pwd"].Value
     }
 
+let isValid p =
+    let c = 
+        p.Pwd
+        |> Seq.toList
+        |> List.filter (fun c -> c = p.Char)
+        |> List.length
+    c >= p.Min && c <= p.Max
+
+let isValid' p =
+    let c1 = p.Pwd.[p.Min-1]
+    let c2 = p.Pwd.[p.Max-1]
+    (c1 = p.Char) <> (c2 = p.Char)
+
+let countValidPasswords validator =
+    List.map parse
+    >> List.filter validator
+    >> List.length
+
 let result1 =
-    1
+    data |> countValidPasswords isValid
     
 let result2 =
-    2
+    data |> countValidPasswords isValid'

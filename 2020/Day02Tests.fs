@@ -24,5 +24,36 @@ let ``parse SHOULD work`` () =
     |> should equal {Min=2; Max=9; Char='c'; Pwd="ccccccccc"}
 
 [<Fact>]
+let ``isValid SHOULD work`` () =
+    parse "1-3 a: abcde"
+    |> isValid
+    |> should equal true
+
+    parse "1-3 b: cdefg"
+    |> isValid
+    |> should equal false
+
+    parse "2-9 c: ccccccccc"
+    |> isValid
+    |> should equal true
+
+[<Fact>]
+let ``isValid' SHOULD work`` () =
+    parse "1-3 a: abcde"
+    |> isValid'
+    |> should equal true
+
+    parse "1-3 b: cdefg"
+    |> isValid'
+    |> should equal false
+
+    parse "2-9 c: ccccccccc"
+    |> isValid'
+    |> should equal false
+
+
+[<Fact>]
 let ``Test case 1`` () =
-    ()
+    testData
+    |> countValidPasswords
+    |> should equal 2
