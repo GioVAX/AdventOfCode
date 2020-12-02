@@ -1,8 +1,5 @@
 module Day
 
-open FsUnit.Xunit
-open Xunit
-
 let data = []
 
 

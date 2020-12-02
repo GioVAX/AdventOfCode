@@ -5,11 +5,11 @@ open Xunit
 
 open Day__
 
-[<Theory>]
-[<InlineData(12, 2)>]
-let ``Given a mass SHOULD compute correct fuel`` (mass, expected) =
+[<Fact>]
+let ``Test case 1`` () =
     (1 |> should equal 1)
 
-[<Fact>]
-let ``Simple test`` () =
+[<Theory>]
+[<InlineData(12, 2)>]
+let ``Test case 2`` (p1, p2) =
     [] |> should matchList []
