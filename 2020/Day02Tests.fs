@@ -53,7 +53,13 @@ let ``isValid' SHOULD work`` () =
 
 
 [<Fact>]
-let ``Test case 1`` () =
+let ``Test case part 1`` () =
     testData
-    |> countValidPasswords
+    |> countValidPasswords isValid
     |> should equal 2
+
+[<Fact>]
+let ``Test case part 2`` () =
+    testData
+    |> countValidPasswords isValid'
+    |> should equal 1
