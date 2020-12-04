@@ -49,7 +49,7 @@ let ``Test case 2 - step 1`` () =
     |> should equal 2
 
 [<Fact>]
-let ``Test case 2 - step 2`` () =
+let ``Test case 2 - step 3`` () =
     slide (Point(0,0)) (Move(5,1)) maze
     |> should equal 3
 
@@ -57,3 +57,25 @@ let ``Test case 2 - step 2`` () =
 let ``Test case 2 - step 4`` () =
     slide (Point(0,0)) (Move(7,1)) maze
     |> should equal 4
+
+[<Fact>]
+let ``Test case 2 - step 5`` () =
+    maze
+    |> eachOther
+    |> slide (Point(0,0)) (Move(1,2)) 
+    |> should equal 2
+
+[<Fact>]
+let ``eachOther SHOULD return even index elements`` () =
+    maze
+    |> eachOther
+    |> should matchList
+         [
+            "..##.......";
+            ".#....#..#.";
+            ".#...##..#.";
+            ".#.#.#....#";
+            "#.##...#...";
+            ".#..#...#.#";
+         ]
+

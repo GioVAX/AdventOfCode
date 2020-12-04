@@ -17,7 +17,7 @@ type Point =
 type Move =
     Move of int * int
 
-let slide (Point(x,_)) (Move(dx,_)) (slope: List<string> ) =
+let slide (Point(x,_)) (Move(dx,_)) (slope: string list) =
     (* Assuming that dy is 1 *)
     let width = slope.[0].Length
     slope |>
@@ -34,11 +34,20 @@ let result1 =
     data
     |> List.ofArray
     |> slide (Point(0,0)) (Move(3,1))
-    
+
+let rec eachOther = function 
+    | [] -> []
+    | [e] -> [e]
+    | e::_::xs -> e::(eachOther xs)
+
 let result2 =
-    let moves = [Move(1,1); Move(3,1); Move (7,1); Move(5,1); Move (1,2)  ]
     let data' = data |> List.ofArray
-    moves 
-    |> List.map 
-        (fun (Move(_,y)) -> 
-            data' |> List. )
+    let origin = Point(0,0)
+
+    let f1 = data' |> slide origin (Move(1,1))
+    let f2 = data' |> slide origin (Move(3,1))
+    let f3 = data' |> slide origin (Move(7,1))
+    let f4 = data' |> slide origin (Move(5,1))
+    let f5 = data' |> eachOther |> slide origin (Move(1,2))
+
+    f1 * f2 * f3 * f4 * f5
