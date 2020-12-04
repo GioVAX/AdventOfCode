@@ -39,6 +39,26 @@ let ``copy and paste of input data is correct`` () =
         |> should be Empty
 
 [<Fact>]
+let ``eachOther 1 SHOULD return all lines`` () =
+    maze |> Array.ofList
+    |> eachOther 1
+    |> should matchList maze
+
+[<Fact>]
+let ``eachOther 2 SHOULD return even index elements`` () =
+    maze |> Array.ofList
+    |> eachOther 2
+    |> should matchList
+         [
+            "..##.......";
+            ".#....#..#.";
+            ".#...##..#.";
+            ".#.#.#....#";
+            "#.##...#...";
+            ".#..#...#.#";
+         ]
+
+[<Fact>]
 let ``Test case 1`` () =
     slide (Point(0,0)) (Move(3,1)) maze
     |> should equal 7
@@ -60,22 +80,7 @@ let ``Test case 2 - step 4`` () =
 
 [<Fact>]
 let ``Test case 2 - step 5`` () =
-    maze
-    |> eachOther
+    maze|> Array.ofList
+    |> eachOther 2
     |> slide (Point(0,0)) (Move(1,2)) 
     |> should equal 2
-
-[<Fact>]
-let ``eachOther SHOULD return even index elements`` () =
-    maze
-    |> eachOther
-    |> should matchList
-         [
-            "..##.......";
-            ".#....#..#.";
-            ".#...##..#.";
-            ".#.#.#....#";
-            "#.##...#...";
-            ".#..#...#.#";
-         ]
-

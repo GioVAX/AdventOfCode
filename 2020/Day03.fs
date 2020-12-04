@@ -35,19 +35,18 @@ let result1 =
     |> List.ofArray
     |> slide (Point(0,0)) (Move(3,1))
 
-let rec eachOther = function 
-    | [] -> []
-    | [e] -> [e]
-    | e::_::xs -> e::(eachOther xs)
+// let rec eachOther = function 
+//     | [] -> []
+//     | [e] -> [e]
+//     | e::_::xs -> e::(eachOther xs)
 
+let eachOther nth (a: 'a array) = 
+    [0..nth..a.Length-1]
+    |> List.map (fun i -> a.[i])
+    
 let result2 =
-    let data' = data |> List.ofArray
-    let origin = Point(0,0)
-
-    let f1 = data' |> slide origin (Move(1,1))
-    let f2 = data' |> slide origin (Move(3,1))
-    let f3 = data' |> slide origin (Move(7,1))
-    let f4 = data' |> slide origin (Move(5,1))
-    let f5 = data' |> eachOther |> slide origin (Move(1,2))
-
-    f1 * f2 * f3 * f4 * f5
+    [Move(1,1);Move(3,1);Move(7,1);Move(5,1);Move(1,2)]
+    |> List.map (
+        (fun (Move(_,dy) as m) -> (m, data |> eachOther dy)) 
+        >> (fun (m, slope) -> slide (Point(0,0)) m slope))
+    |> List.reduce (*)
