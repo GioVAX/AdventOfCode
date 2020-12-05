@@ -29,12 +29,27 @@ let computeSeat (s:string) =
     let s' = s.[7..9].Replace("R", "1").Replace("L", "0")
     "0b" + s' |> int
 
+let compute seat =
+    ((computeRow seat) * 8) + (computeSeat seat)
+
 let result1 =
     data
-    |> Seq.map 
-        (fun seat ->
-            ((computeRow seat) * 8) + (computeSeat seat))
+    |> Seq.map compute
     |> Seq.max
     
 let result2 =
-    2
+    let r = 
+        data
+        |> Seq.map (fun s -> s, compute s)
+        |> Seq.sortBy snd
+        |> Seq.windowed 3
+    
+    let x =
+        r |>
+        Seq.find 
+            (fun a ->
+                let p1 = a.[0] |> snd
+                let p2 = a.[1] |> snd
+                p1 + 1 <> p2)
+    
+    (snd x.[0] ) + 1
