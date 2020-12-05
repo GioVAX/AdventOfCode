@@ -1002,7 +1002,7 @@ let parsePassport s =
     let groups = Regex.Matches(s, pattern)
     groups |> Seq.map (fun m -> m.Groups.[1].Value, m.Groups.[2].Value) |> Map
 
-let isValid (p:Map<string,string>) =
+let hasAllRequiredFields (p:Map<string,string>) =
     let mandatoryFields = ["ecl"; "pid"; "eyr"; "hcl"; "byr"; "iyr"; "hgt"]
 
     mandatoryFields
@@ -1013,8 +1013,69 @@ let result1 =
     data
     |> groupPassportData
     |> List.map parsePassport
-    |> List.countBy isValid
+    |> List.countBy hasAllRequiredFields
 
+let between min max n = (n >= min) && (n <= max)
+
+let numberBetween min max num =
+    let m = Regex.Match(num, @"\b*\d+\b")
+    match m.Success with
+    | false -> false
+    | true -> m.Value |> int |> between min max
+
+let validateBirthYear =
+    numberBetween 1920 2002
+
+let validateIssueYear =
+    numberBetween 2010 2020
+
+let validateExpirationYear =
+    numberBetween 2020 2030
+
+let validateHeight s =
+    let m = Regex.Match(s, @"\b*(\d+cm|\d+in)\b")
+    match m.Success with
+    | false -> false
+    | true -> 
+        let g = m.Groups |> Seq.find (fun x -> x.Name = "1")
+        match g.Value.[g.Value.Length-1] with
+        | 'm' -> 
+            m.Value.[0..m.Value.Length-3] |> int |> between 150 193
+        | 'n' -> m.Value.[0..m.Value.Length-3] |> int |> between 59 76
+        | _ -> false
+
+let validateHairColor s =
+    let pattern = @"\b*#[0-9a-f]+\b"
+    let m = Regex.Match(s, pattern)
+    m.Success && m.Value.Length = 7
+
+let validateEyeColor s =
+    let pattern = @"\b*(amb|blu|brn|gry|grn|hzl|oth)\b"
+    Regex.Match(s, pattern).Success
     
-let result2 =
-    2
+let validatePassportId s =
+    let pattern = @"\b*\d*\b"
+    let m = Regex.Match(s, pattern)
+    m.Success && m.Value.Length = 9
+
+let validators = 
+    [
+        ("byr", validateBirthYear);
+        ("iyr", validateIssueYear);
+        ("eyr", validateExpirationYear);
+        ("hgt", validateHeight);
+        ("hcl", validateHairColor);
+        ("ecl", validateEyeColor);
+        ("pid", validatePassportId)
+    ] |> Map
+
+let passAllValidators (p:Map<string,string>) =
+    validators
+    |> Map.forall (fun k f -> f p.[k])
+
+let result2() =
+    data
+    |> groupPassportData
+    |> List.map parsePassport
+    |> List.where hasAllRequiredFields
+    |> List.countBy passAllValidators
