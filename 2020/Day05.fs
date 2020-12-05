@@ -53,3 +53,15 @@ let result2 =
                 p1 + 1 <> p2)
     
     (snd x.[0] ) + 1
+
+
+let result2' =
+    let r = data |> Seq.sort
+
+    let pMin = r |> Seq.head |> compute
+    let pMax = r |> Seq.last |> compute
+
+    let allSeatsTheory = (pMin + pMax) * (pMin - pMax + 1) / 2
+    let allRealSeats = data |> Seq.sumBy compute
+
+    allSeatsTheory - allRealSeats
