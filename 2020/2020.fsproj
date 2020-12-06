@@ -17,6 +17,8 @@
     <Compile Include="Day05Tests.fs" />
     <Compile Include="Day06.fs" />
     <Compile Include="Day06Tests.fs" />
+    <Compile Include="Day07.fs" />
+    <Compile Include="Day07Tests.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="fsunit.xunit" Version="4.0.2" />
