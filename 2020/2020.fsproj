@@ -4,6 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Commons.fs" />
     <Compile Include="Day01.fs" />
     <Compile Include="Day01Tests.fs" />
     <Compile Include="Day02.fs" />
@@ -14,6 +15,8 @@
     <Compile Include="Day04Tests.fs" />
     <Compile Include="Day05.fs" />
     <Compile Include="Day05Tests.fs" />
+    <Compile Include="Day06.fs" />
+    <Compile Include="Day06Tests.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="fsunit.xunit" Version="4.0.2" />

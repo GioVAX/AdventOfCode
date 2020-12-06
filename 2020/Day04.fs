@@ -2,6 +2,8 @@ module Day04
 
 open System.Text.RegularExpressions
 
+open Commons
+
 let data = 
     [|
         "byr:1985";
@@ -990,12 +992,8 @@ let data =
         "iyr:2025 pid:182cm hcl:d1614a cid:103";
     |] |> List.ofArray
 
-let rec groupPassportData (ls: string list) = 
-    match ls with
-    | [] -> []
-    | [s1] -> [s1]
-    | s1::""::tail -> s1::groupPassportData tail
-    | s1::s2::tail -> (s1 + " " + s2)::tail |> groupPassportData
+let rec groupPassportData =
+    groupDataOnSeparator "" " "
 
 let parsePassport s =
     let pattern = @"(?<Key>[a-zA-Z0-9]*):(?<Value>[a-zA-Z0-9\-#]*)"
