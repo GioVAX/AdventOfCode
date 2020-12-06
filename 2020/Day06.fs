@@ -60,6 +60,16 @@ let result1 =
     data
     |> solve1
     
+let fullSet = ['a'..'z'] |> Set
+
+let folder (set:Set<char>, count:int) (s:string) =
+    match s with
+    | "" ->
+        (fullSet, count + set.Count)
+    | _ ->
+        let set' = Set.intersect set (s |> Set)
+        (set', count)
 
 let result2 =
-    2
+    let (set, cnt) = data |> Seq.fold folder (fullSet, 0)
+    cnt + set.Count
