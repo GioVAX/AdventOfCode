@@ -1,5 +1,7 @@
 module Day07
 
+open System.Text.RegularExpressions
+
 let data =
     [|
         "striped white bags contain 4 drab silver bags.";
@@ -598,6 +600,13 @@ let data =
         "muted white bags contain 3 muted tomato bags, 5 light black bags, 4 pale black bags, 5 shiny gold bags.";
     |]
 
+let parse s =
+    let m = Regex.Matches(s, @"(?<container>.*) bags contain( \d+ (?<contained>.*?) bags?,?)*")
+    let container = m.[0].Groups.["container"].Value
+    let contained =
+        m.[0].Groups.["contained"].Captures
+        |> Seq.map (fun c -> c.Value)
+    (container, contained)
 
 let result1 =
     1

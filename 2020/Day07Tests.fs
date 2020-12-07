@@ -26,39 +26,24 @@ let p3 = @"\d+ (?<color>.*?) bags?[.,]?"
 
 [<Fact>]
 let ``Parse data with single contained`` () =
-    let m = Regex.Matches(testData.[0], @"(?<container>.*) bags contain( \d+ (?<contained>.*?) bags?,?)*")
-    m.Count |> should equal 1
-    
-    let container = m.[0].Groups.["container"]
-    container.Captures.Count |> should equal 1
-    container.Value |> should equal "light red"
-    container.Captures.[0].Value |> should equal "light red"
-
-    let contained = m.[0].Groups.["contained"]
-    contained.Captures.Count |> should equal 2
-    contained.Value |> should equal "muted yellow"
-    contained.Captures
-    |> Seq.map (fun c -> c.Value)
-    |> Seq.toList
+    let (c1, c2) = parse testData.[0]
+    c1 |> should equal "light red"
+    c2 |> Seq.toList
     |> should matchList ["muted yellow"; "bright white"]
 
 [<Fact>]
 let ``Parse data with multiple contained`` () =
-    let m = Regex.Matches(testData.[3], @"(?<container>.*) bags contain( \d+ (?<contained>.*?) bags?,?)*")
-    m.Count |> should equal 1
-
-    let container = m.[0].Groups.["container"]
-    container.Captures.Count |> should equal 1
-    container.Value |> should equal "muted yellow"
-    container.Captures.[0].Value |> should equal "muted yellow"
-
-    let contained = m.[0].Groups.["contained"]
-    contained.Captures.Count |> should equal 2
-    contained.Value |> should equal "faded blue"
-    contained.Captures
-    |> Seq.map (fun c -> c.Value)
-    |> Seq.toList
+    let (c1, c2) = parse testData.[3]
+    c1 |> should equal "muted yellow"
+    c2 |> Seq.toList
     |> should matchList ["faded blue"; "shiny gold"]
+
+[<Fact>]
+let ``Parse data with nothing contained`` () =
+    let (c1, c2) = parse testData.[8]
+    c1 |> should equal "dotted black"
+    c2 |> Seq.toList
+    |> should matchList []
 
 [<Theory>]
 [<InlineData(12, 2)>]
