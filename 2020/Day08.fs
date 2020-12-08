@@ -1,5 +1,7 @@
 module Day08
 
+open VirtualMachine
+
 let data =
     [|
         "jmp +11";
@@ -665,7 +667,12 @@ let data =
     |]
 
 let result1 =
-    1
+    let inst =
+        data
+        |> loadProgram
+        |> Array.ofSeq
+
+    inst |> executeProgram
     
 let result2 =
     2
