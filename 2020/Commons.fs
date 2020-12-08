@@ -17,3 +17,6 @@ let groupDataOnSeparator (groupSeparator:string) (separator:string) =
         (s1 + separator + s2)::tail
         |> loop
     loop
+
+let withIndex s =
+    s |> Seq.mapi (fun i p -> (i, p))

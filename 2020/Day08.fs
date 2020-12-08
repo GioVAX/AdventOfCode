@@ -1,5 +1,6 @@
 module Day08
 
+open Commons
 open VirtualMachine
 
 let data =
@@ -672,7 +673,42 @@ let result1 =
         |> loadProgram
         |> Array.ofSeq
 
-    inst |> executeProgram
-    
+    inst |> executeProgram |> snd
+
+let flipInstruction idx (prog:Operation []) =
+    prog.[idx] <-
+        match prog.[idx] with
+        | Nop n -> Jmp n
+        | Jmp n -> Nop n
+        | anything -> anything
+    prog
+
+let executeToTheEnd (prog:Operation []) =
+    match executeProgram prog with
+    | (idx, res) when idx = prog.Length - 1 -> Some res
+    | _ -> None
+
+let indexesNopJmp = 
+    withIndex
+    >> Seq.filter 
+        (fun (_,o) -> 
+            match o with 
+            | Nop _ | Jmp _ -> true 
+            | _ -> false)
+    >> Seq.map fst
+    >> Seq.toArray
+
 let result2 =
-    2
+    let inst =
+        data
+        |> loadProgram
+
+    inst
+    |> indexesNopJmp
+    |> Array.choose
+        (fun idx -> 
+            inst
+            |> Seq.toArray
+            |> flipInstruction idx
+            |> executeToTheEnd)
+    |> Array.head

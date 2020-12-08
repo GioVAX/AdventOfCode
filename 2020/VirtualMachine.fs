@@ -38,9 +38,9 @@ let executeProgram (instructions:Operation array) =
         | Jmp n ->
             Cont (idx+n, acc)
 
-    let rec loop ((idx, acc) as state) =
+    let rec loop ((idx, _) as state) =
         match executeOp state instructions.[idx] with
-        | EndProg res -> res
+        | EndProg res -> (idx, res)
         | Cont (idx', acc') ->
             instructions.SetValue(AlreadyVisited, idx)
             loop (idx', acc')
