@@ -1,34 +1,48 @@
 module VirtualMachine
 
+open Commons
+
 type Operation =
-    | Nop
+    | Nop of int
     | Acc of int
     | Jmp of int
+    | End
     | AlreadyVisited
 
+type Result =
+    | EndProg of int
+    | Cont of int * int
+
 let parse (s:string) =
-    match s.[0..2] with
-    | "nop" -> Nop
-    | "jmp" -> s.[3..] |> int |> Jmp
-    | "acc" -> s.[3..] |> int |> Acc
-    | _ -> failwith "Unknown opCode"
+    match s with
+    | Regex @"([a-z]{3}) ([+-]?\d+)" [op; value] ->
+        match op with
+        | "nop" -> value |> int |> Nop
+        | "jmp" -> value |> int |> Jmp
+        | "acc" -> value |> int |> Acc
+        | _ -> failwith <| "Unknown opCode - " + op
+    | _ -> failwith <| "Syntax error - " + s
 
 let loadProgram s = 
-    s |> Seq.map parse
+    let prog = s |> Seq.map parse
+    Seq.append prog [End]
 
 let executeProgram (instructions:Operation array) = 
-    let rec loop (idx, acc) =
-        match instructions.[idx] with
-        | AlreadyVisited -> acc
-        | Nop -> 
-            instructions.SetValue(AlreadyVisited, idx)
-            loop (idx+1, acc)
+    let executeOp (idx, acc) = function
+        | End
+        | AlreadyVisited -> EndProg acc
+        | Nop _ -> 
+            Cont (idx+1, acc)
         | Acc n -> 
-            instructions.SetValue(AlreadyVisited, idx)
-            loop (idx+1, acc+n)
+            Cont (idx+1, acc+n)
         | Jmp n ->
+            Cont (idx+n, acc)
+
+    let rec loop ((idx, acc) as state) =
+        match executeOp state instructions.[idx] with
+        | EndProg res -> res
+        | Cont (idx', acc') ->
             instructions.SetValue(AlreadyVisited, idx)
-            loop (idx+n, acc)
+            loop (idx', acc')
     
     loop (0, 0)
-    
