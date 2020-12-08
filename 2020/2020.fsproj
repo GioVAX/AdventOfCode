@@ -5,21 +5,23 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Commons.fs" />
+    <Compile Include="VirtualMachine.fs" />
     <Compile Include="Day01.fs" />
-    <Compile Include="Day01Tests.fs" />
     <Compile Include="Day02.fs" />
-    <Compile Include="Day02Tests.fs" />
     <Compile Include="Day03.fs" />
-    <Compile Include="Day03Tests.fs" />
     <Compile Include="Day04.fs" />
-    <Compile Include="Day04Tests.fs" />
     <Compile Include="Day05.fs" />
-    <Compile Include="Day05Tests.fs" />
     <Compile Include="Day06.fs" />
-    <Compile Include="Day06Tests.fs" />
     <Compile Include="Day07.fs" />
-    <Compile Include="Day07Tests.fs" />
     <Compile Include="Day08.fs" />
+    <Compile Include="VirtualMachineTests.fs" />
+    <Compile Include="Day01Tests.fs" />
+    <Compile Include="Day02Tests.fs" />
+    <Compile Include="Day03Tests.fs" />
+    <Compile Include="Day04Tests.fs" />
+    <Compile Include="Day05Tests.fs" />
+    <Compile Include="Day06Tests.fs" />
+    <Compile Include="Day07Tests.fs" />
     <Compile Include="Day08Tests.fs" />
   </ItemGroup>
   <ItemGroup>
