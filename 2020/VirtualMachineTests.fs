@@ -6,10 +6,20 @@ open Xunit
 open VirtualMachine
 
 [<Fact>]
-let ``Test case 1`` () =
-    (1 |> should equal 1)
+let ``parse test`` () =
+    let tests = 
+        [
+            ("nop +400", Nop);
+            ("acc -18", Acc -18)
+        ]
 
-[<Theory>]
-[<InlineData(12, 2)>]
-let ``Test case 2`` (p1, p2) =
-    [] |> should matchList []
+    tests
+    |> List.iter
+        (fun (s, expected) -> s |> parse |> should equal expected)
+    
+// [<Theory>]
+// [<InlineData("nop +400", (Nop))>]
+// [<InlineData("acc -18", Acc -18)>]
+// let ``parse tests`` (s, expected) =
+//     let actual = parse s
+//     actual |>should equal expected
