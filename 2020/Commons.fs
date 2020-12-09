@@ -20,3 +20,15 @@ let groupDataOnSeparator (groupSeparator:string) (separator:string) =
 
 let withIndex s =
     s |> Seq.mapi (fun i p -> (i, p))
+
+let findCouple target sortedList =
+    let rec search l1 l2 =
+        match (l1, l2) with
+        | ([], _) | (_, []) -> None
+        | (h1::_,h2::_) when h1 + h2 = target -> Some (h1, h2)
+        | (h1::_,h2::t2) when h1 + h2 > target -> search l1 t2
+        | (h1::t1,h2::_) (*when h1 + h2 < target*) -> search t1 l2
+
+    let data' = List.rev sortedList
+
+    search sortedList data'

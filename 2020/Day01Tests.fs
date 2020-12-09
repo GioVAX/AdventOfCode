@@ -4,6 +4,7 @@ open System
 open FsUnit.Xunit
 open Xunit
 
+open Commons
 open Day01
 
 [<Fact>]
