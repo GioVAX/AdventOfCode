@@ -32,3 +32,13 @@ let findCouple target sortedList =
     let data' = List.rev sortedList
 
     search sortedList data'
+
+let rec sortedInsert v = function
+    | [] -> [v]
+    | h::t when v < h -> v::h::t
+    | h::t -> h::(sortedInsert v t)
+
+let rec sortedRemove v = function
+    | [] -> []
+    | h::t when h = v -> t
+    | h::t -> h::(sortedRemove v t)
