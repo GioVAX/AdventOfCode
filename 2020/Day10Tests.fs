@@ -1,13 +1,23 @@
-module Day__Tests
+module Day10Tests
 
 open FsUnit.Xunit
 open Xunit
 
-open Day__
+open Day10
 
 [<Fact>]
 let ``Test case 1`` () =
-    (1 |> should equal 1)
+    let data = [16;10;15;5;1;11;7;19;6;12;4]
+
+    let data' =
+        0::data
+        |> List.sort
+        |> toDiffs
+
+    data'
+    |> List.groupBy id
+    |> List.map (fun (j,l) -> (j, List.length l))
+    |> should matchList [(1,7); (3,4)]
 
 [<Theory>]
 [<InlineData(12, 2)>]
