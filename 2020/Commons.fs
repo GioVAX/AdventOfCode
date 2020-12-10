@@ -33,12 +33,15 @@ let findCouple target sortedList =
 
     search sortedList data'
 
-let rec sortedInsert v = function
+let rec sortedInsert' lessThan list v =
+    match list with
     | [] -> [v]
-    | h::t when v < h -> v::h::t
-    | h::t -> h::(sortedInsert v t)
+    | head::tail when lessThan v head -> v::head::tail
+    | head::tail -> head::(sortedInsert' lessThan tail v)
 
-let rec sortedRemove v = function
+// let sortedInsert = (sortedInsert' (<))
+
+let rec sortedRemove cmp v = function
     | [] -> []
-    | h::t when h = v -> t
-    | h::t -> h::(sortedRemove v t)
+    | head::tail when cmp head v -> tail
+    | head::tail -> head::(sortedRemove cmp v tail)

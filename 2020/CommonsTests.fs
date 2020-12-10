@@ -10,7 +10,7 @@ open Commons
 let ``sortedInsert test`` (list: int list) =
     let actual =
         list
-        |> List.fold (fun sorted n -> sortedInsert n sorted) []
+        |> List.fold (sortedInsert' (<)) []
         |> withIndex
         |> Seq.toList
 
