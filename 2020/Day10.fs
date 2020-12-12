@@ -136,16 +136,32 @@ let result1 =
     |> List.map (snd >> List.length)
     |> List.fold (*) 1      // This assumes that the differences are all 1s and 3s!!!!
 
-let array = Array2D.init 4 data.Length (fun i j -> if i = 1 || j = 1 then Some 1 else None)
+let countSeqs1 (x::xs) n =      
+    match (x,n) with    
+    | (_,1) -> (x+1)::xs
+    | (0,_) -> x::xs    
+    | _ -> 0::x::xs    
+// use in distances |> List.fold countSeqs1 [0]
 
-let rec howManyWays getTo jump =
-    match array.[jump,getTo] with
-    | Some n -> n
-    | None ->
-        let v = (howManyWays getTo jump-1) + (howManyWays (getTo-jump) jump)
-        Array2D.set array jump getTo 
-        <| Some v
-        v
+// let rec howManyWays getTo jump =
 
 let result2 =
-    2
+    let data' =
+        0::data
+        |> List.sort
+
+    let devJolts = (+) 3 <| List.max data'
+
+    let ways =
+        Map.empty
+            .Add(1, 1I)
+            .Add(2, 2I)
+            .Add(3, 4I)
+            .Add(4, 5I)
+
+    data' @ [devJolts]        
+    |> toDiffs
+    |> List.fold countSeqs1 [0]
+    |> List.filter ((<>) 0) 
+    |> List.map (fun d -> ways.[d]) 
+    |> List.fold (*) 1I
