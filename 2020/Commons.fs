@@ -45,3 +45,14 @@ let rec sortedRemove cmp v = function
     | [] -> []
     | head::tail when cmp head v -> tail
     | head::tail -> head::(sortedRemove cmp v tail)
+
+type Direction =
+    | Right
+    | Left
+    | Up
+    | Down
+
+let manhattanDistance (x1, y1) (x2, y2) =
+    let x = abs (x2 - x1)
+    let y = abs  (y2 - y1)
+    x + y
