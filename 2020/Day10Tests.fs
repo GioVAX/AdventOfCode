@@ -43,7 +43,7 @@ let ``Test case part 2`` () =
 
     let seqs = 
         diffs
-        |> List.fold countSeqs1 [0]
+        |> List.fold countSeqs1 []
         |> List.filter ((<>) 0) 
         |> List.map (fun n -> ways.[n])
 
@@ -77,7 +77,7 @@ let ``Test case part 2 - 2`` () =
 
     let seqs = 
         diffs
-        |> List.fold countSeqs1 [0]
+        |> List.fold countSeqs1 []
         |> List.filter ((<>) 0) 
         |> List.map (fun n -> ways.[n])
 
