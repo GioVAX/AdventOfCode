@@ -124,13 +124,28 @@ let result1 =
     let data' =
         0::data
         |> List.sort
+
+    let devJolts = (+) 3 <| List.max data'
+
+    let data'' =
+        data' @ [devJolts]        
         |> toDiffs
 
-    data'
+    data''
     |> List.groupBy id
     |> List.map (snd >> List.length)
-    
-    // compute  jumps1 * (jumps3+1)
-    
+    |> List.fold (*) 1      // This assumes that the differences are all 1s and 3s!!!!
+
+let array = Array2D.init 4 data.Length (fun i j -> if i = 1 || j = 1 then Some 1 else None)
+
+let rec howManyWays getTo jump =
+    match array.[jump,getTo] with
+    | Some n -> n
+    | None ->
+        let v = (howManyWays getTo jump-1) + (howManyWays (getTo-jump) jump)
+        Array2D.set array jump getTo 
+        <| Some v
+        v
+
 let result2 =
     2
