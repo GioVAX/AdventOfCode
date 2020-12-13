@@ -11,7 +11,7 @@ let parse (buses:string) =
     |> Seq.filter ((<>) "x")
     |> Seq.map int
     
-let busAfterTime t b =
+let firstBusAfterTime t b =
     let passingBefore = t % b
     (b, b - passingBefore)
 
@@ -21,10 +21,40 @@ let result1 =
     
     let nextBus = 
         buses
-        |> Seq.map (busAfterTime beginWait)
+        |> Seq.map (firstBusAfterTime beginWait)
         |> Seq.minBy snd
     
     (fst nextBus) * (snd nextBus)
 
+// ----------------- part 2 --------------------------------
+
+let parseWithIndex (buses:string) =
+    buses.Split(",")
+    |> Seq.indexed
+    |> Seq.filter (snd >> (<>) "x")
+    |> Seq.map (fun (i, s) -> (i, s |> int))
+
+let check (maxBus:bigint) (offset:bigint) buses (n:bigint) =
+    let baseline = (maxBus * n) - offset  
+    buses
+    |> Seq.forall (fun (off, bus) -> (baseline % bus) = (bus - off) % bus);;
+
+let computeTime2 (input:string) =
+    let buses = 
+        input
+        |> parseWithIndex
+        |> Seq.map (fun (o, b) -> (bigint o, bigint b))
+    
+    let (offset, maxBus) =
+        buses
+        |> Seq.maxBy snd
+
+    let n =
+        Seq.initInfinite bigint
+        |> Seq.find (check maxBus offset buses)
+
+    (maxBus*n)-offset
+
+
 let result2 =
-    2
+    computeTime2 data.[1]    
