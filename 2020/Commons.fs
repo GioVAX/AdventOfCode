@@ -4,8 +4,23 @@ open System.Text.RegularExpressions
 
 let (|Regex|_|) pattern input =
     let m = Regex.Match(input, pattern)
-    if m.Success then Some(List.tail [for g in m.Groups -> g.Value])
+    if m.Success
+    then Some(List.tail [for g in m.Groups -> g.Value])
     else None
+
+let (|MultiRegex|_|) pattern input =
+    match Regex.Matches(input, pattern)  with
+    | m when m |> Seq.isEmpty -> 
+        None
+    | matches ->
+        matches
+        |> Seq.collect 
+            (fun m -> 
+                m.Groups 
+                |> Seq.map 
+                    (fun g -> (g.Name, [for h in g.Captures -> h.Value])))
+        |> Map.ofSeq
+        |> Some
 
 let groupDataOnSeparator (groupSeparator:string) (separator:string) =
     let rec loop = function 
