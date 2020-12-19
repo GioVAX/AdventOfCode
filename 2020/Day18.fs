@@ -1,5 +1,7 @@
 module Day18
 
+open Commons
+
 let data = 
     [|
         "9 * 2 + 3 + 9 * ((3 * 3 + 7 * 6 + 5 + 5) * 8 * (6 * 8 + 7 * 2) + 4)";
@@ -381,7 +383,30 @@ let data =
         "4 + (4 + 5 * (5 * 6 * 5 + 2 * 4) + (2 * 7 * 3 * 8 * 8 + 5) * 5 + 8) * 5 + (9 + (5 + 2 + 7 + 6 * 5 * 6) * 9) * (2 * (8 * 3 + 9)) + 8";
     |]
 
-
+let rec evaluate (s:string) (n:int) = 
+    match s with
+    // Result
+    | "" 
+    | ")" -> n
+    // Parenthesis
+    | Regex @"^(\d+)\s+\+\s+\((.*)" [op1; op2; remaining] ->
+        let s = (op1 |> int) + (op2 |> int) |> string 
+        evaluate (s + remaining) 0
+    // Sum
+    | Regex @"^(\d+)\s+\+\s+(\d+)(.*)" [op1; op2; remaining] ->
+        let s = (op1 |> int) + (op2 |> int) |> string 
+        evaluate (s + remaining) 0
+    // Product
+    | Regex @"^(\d+)\s+\*\s+(\d+)(.*)" [op1; op2; remaining] ->
+        let s = (op1 |> int) * (op2 |> int) |> string 
+        evaluate (s + remaining) 0
+    // Number
+    | Regex @"^(\d+)(.*)" [number; remaining] ->
+        evaluate remaining (number |> int)
+    // Spaces
+    | Regex @"^\s+(.*)" [remaining] -> 
+        evaluate remaining n
+    | _ -> failwith "unknown"
 
 let result1 =
     1

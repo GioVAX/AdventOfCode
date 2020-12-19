@@ -1,21 +1,37 @@
 module Day18Tests
 
-open FsUnit.Xunit
 open Xunit
+open FsCheck
+open FsCheck.Xunit
+open FsUnit.Xunit
 
 open Day18
 
+[<Property>]
+let ``evaluate literal number`` (n:PositiveInt) =
+    let n' = n.Get
+    evaluate (n' |> string) 0
+    |> should equal n'
+
+[<Property>]
+let ``evaluate sum of 2 numbers`` (n:PositiveInt) (m:PositiveInt) =
+    let n' = n.Get
+    let m' = m.Get
+
+    evaluate $"{n'} + {m'}" 0
+    |> should equal <| n' + m'
+
 [<Fact>]
 let ``Part 1 - base case`` () =
-    //"1 + 2 * 3 + 4 * 5 + 6" --> 71
-    (1 |> should equal 1)
+    evaluate "1 + 2 * 3 + 4 * 5 + 6" 0
+    |> should equal 71
 
-[<Fact>]
+[<Fact(Skip="not implementated yet")>]
 let ``Part 1 - parenthesis have precedence`` () =
-// [<InlineData("1 + (2 * 3) + (4 * (5 + 6))", 51)>]
-    (1 |> should equal 1)
+    evaluate "1 + (2 * 3) + (4 * (5 + 6))" 0
+    |> should equal 51
 
-[<Theory(Skip="no implementation yet")>]
+[<Theory(Skip="not implementated yet")>]
 [<InlineData("1 + (2 * 3) + (4 * (5 + 6))", 51)>]
 [<InlineData("2 * 3 + (4 * 5)", 26)>]
 [<InlineData("5 + (8 * 3 + 9 + 3 * 4 * 3)", 437)>]
