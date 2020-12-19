@@ -676,26 +676,30 @@ let buildMap rules =
     Seq.fold addRule Map.empty rules
 
 let rec buildRegex idx (map:Map<int, Rule>) =
-    match map |> Map.tryFind idx with
-    | None -> failwith "Incorrect map"
-    | Some {Regex=regex} when regex <> "" -> regex 
-    | Some {Uses=ref} -> 
-        match ref with
-        | NoRef -> 
-            failwith "This should be impossible"
-        | Single ref -> 
-            buildRegex ref map
-        | Sequence refs ->
-            refs |> List.fold (fun s i -> s + buildRegex i map) ""
-        | Alternative (refs1, refs2) ->
-            let s1 = refs1 |> List.fold (fun s i -> s + buildRegex i map) ""
-            let s2 = refs2 |> List.fold (fun s i -> s + buildRegex i map) ""
-            $"[{s1}|{s2}]"
+    let rec loop idx (map:Map<int, Rule>) =
+        let seqToString = List.fold (fun s i -> s + loop i map) ""
+        match map |> Map.tryFind idx with
+        | None -> failwith "Incorrect map"
+        | Some {Regex=regex} when regex <> "" -> regex 
+        | Some {Uses=ref} -> 
+            match ref with
+            | NoRef -> 
+                failwith "This should be impossible"
+            | Single ref -> 
+                loop ref map
+            | Sequence refs ->
+                refs |> seqToString
+            | Alternative (refs1, refs2) ->
+                let s1 = refs1 |> seqToString
+                let s2 = refs2 |> seqToString
+                $"({s1}|{s2})"
+    "^" + (loop idx map) + "$"
 
 let result1 =
     let regex = 
         buildMap rules
         |> buildRegex 0
+
     messages
     |> Seq.countBy (fun m -> Regex.Match(m, regex).Length <> 0)
     |> Seq.toList
