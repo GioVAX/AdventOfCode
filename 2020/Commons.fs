@@ -71,3 +71,20 @@ let manhattanDistance (x1, y1) (x2, y2) =
     let x = abs (x2 - x1)
     let y = abs  (y2 - y1)
     x + y
+
+let rec reverse = function 
+    | [] -> []
+    | x::xs -> (reverse xs) @ [x]
+
+let reverseSeq s = 
+    s 
+    |> Seq.toList 
+    |> reverse 
+    |> List.toSeq
+
+let reverseString (s:string) = s |> reverseSeq |> System.String.Concat
+
+let (|SeqEmpty|Seq|) (xs: 'a seq) = //'
+  if Seq.isEmpty xs 
+  then SeqEmpty
+  else Seq(Seq.head xs, Seq.tail xs)
