@@ -21,10 +21,10 @@ let ``playGame test`` () =
 [<Fact>]
 let ``scoreGame test`` () =
     [3; 2; 10; 6; 8; 5; 9; 4; 7; 1]
-    |> scoreGame
+    |> scoreDeck
     |> should equal 306I
 
-[<Theory>]
-[<InlineData(12, 2)>]
-let ``Test case 2`` (p1, p2) =
-    [] |> should matchList []
+[<Fact>]
+let ``Test part 2`` =
+    result2 testDeck1 testDeck2
+    |> should equal 291
