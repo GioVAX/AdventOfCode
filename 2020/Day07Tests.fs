@@ -20,30 +20,47 @@ let testData =
         "dotted black bags contain no other bags.";
     |]
 
-let p1 = @"(?<container>.*) bags contain (\d+ (?<contained>.*) bags?,?)*"
-let p2 = @"(?<container>[\w\s]*) bags contain (\d+ (?<contained>[\w\s]*) bags?[,.])*"
-let p3 = @"\d+ (?<color>.*?) bags?[.,]?"
-
 [<Fact>]
 let ``Parse data with single contained`` () =
-    let (c1, c2) = parse testData.[0]
-    c1 |> should equal "light red"
-    c2 |> Seq.toList
+    let bag = parse testData.[0]
+    bag.Color |> should equal "light red"
+    bag.Contains |> Seq.toList
     |> should matchList ["muted yellow"; "bright white"]
 
 [<Fact>]
 let ``Parse data with multiple contained`` () =
-    let (c1, c2) = parse testData.[3]
-    c1 |> should equal "muted yellow"
-    c2 |> Seq.toList
+    let bag = parse testData.[3]
+    bag.Color |> should equal "muted yellow"
+    bag.Contains |> Seq.toList
     |> should matchList ["faded blue"; "shiny gold"]
 
 [<Fact>]
 let ``Parse data with nothing contained`` () =
-    let (c1, c2) = parse testData.[8]
-    c1 |> should equal "dotted black"
-    c2 |> Seq.toList
+    let bag = parse testData.[8]
+    bag.Color |> should equal "dotted black"
+    bag.Contains |> Seq.toList
     |> should matchList []
+
+[<Fact>]
+let ``createMap tests`` () =
+    let map = createMap testData
+
+    map.["faded blue"]
+    |> should matchList ["dark olive"; "muted yellow"; "vibrant plum"]
+
+    map.["muted yellow"]
+    |> should matchList ["light red"; "dark orange"]
+
+[<Fact>]
+let ``walkTheMap tests`` () =
+    let map =
+        testData.[0..1] 
+        |> Seq.take 2
+        |> createMap
+    
+    walkTheMap map "muted yellow"
+    |> should matchList ["muted yellow"; "light red"; "dark orange"]
+
 
 [<Theory>]
 [<InlineData(12, 2)>]

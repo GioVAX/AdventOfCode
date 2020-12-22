@@ -1,6 +1,6 @@
 module Day07
 
-open System.Text.RegularExpressions
+open Commons
 
 let data =
     [|
@@ -600,16 +600,44 @@ let data =
         "muted white bags contain 3 muted tomato bags, 5 light black bags, 4 pale black bags, 5 shiny gold bags.";
     |]
 
-let parse s =
-    let m = Regex.Matches(s, @"(?<container>.*) bags contain( \d+ (?<contained>.*?) bags?,?)*")
-    let container = m.[0].Groups.["container"].Value
-    let contained =
-        m.[0].Groups.["contained"].Captures
-        |> Seq.map (fun c -> c.Value)
-    (container, contained)
+type Bag =
+    {
+        Color: string
+        Contains: string list
+    }
 
-let result1 =
-    1
+let parse s =
+    match s with
+    | MultiRegex @"(?<container>.*) bags contain( \d+ (?<contained>.*?) bags?,?)*" map ->
+        {Color= map.["container"].Head; Contains=map.["contained"]}
+    | _ -> failwith ("Syntax error - " + s)
+
+let safeAppendToMap value map key =
+    let oldValue =
+        match map |> Map.tryFind key with
+        | Some value -> value
+        | None -> []
+    map |> Map.add key (value::oldValue)
+
+let addBagToMap (map:Map<string, string list>) bag =
+    bag.Contains
+    |> List.fold (safeAppendToMap bag.Color) map
+
+let createMap input = 
+    input
+    |> Seq.map parse
+    |> Seq.fold addBagToMap Map.empty
+
+let rec walkTheMap map start =
+    match map |> Map.tryFind start with
+    | Some nextSteps ->
+        start::(nextSteps |> List.collect (walkTheMap map))
+    | None -> []
     
+let result1 input =
+    let map = createMap input
+    let bags = "shiny gold" |> walkTheMap  map
+    bags
+
 let result2 =
     2
