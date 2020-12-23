@@ -25,6 +25,12 @@ let ``scoreGame test`` () =
     |> should equal 306I
 
 [<Fact>]
-let ``Test part 2`` =
+let ``recursiveCombat SHOULD avoid infinite loops`` () =
+    let (winner, _) = recursiveCombat [43;19] [2;29;14] Set.empty
+    winner
+    |> should equal 1
+
+[<Fact>]
+let ``Test part 2`` () =
     result2 testDeck1 testDeck2
-    |> should equal 291
+    |> should equal 291I

@@ -78,23 +78,28 @@ let result1 =
     scoreDeck winner
 
 let rec recursiveCombat deck1 deck2 pastRounds =
-    let round = (scoreDeck deck1, scoreDeck deck2)
-    if pastRounds |> Set.contains round
-    then (1, deck1)
-    else 
-        let pastRounds' = pastRounds |> Set.add round
+    let thisRound = (scoreDeck deck1, scoreDeck deck2)
+    match pastRounds |> Set.contains thisRound with
+    | true -> 
+        (1, deck1)
+    | false -> 
+        let pastRounds' = pastRounds |> Set.add thisRound
         match (deck1, deck2) with
         | (_,[]) -> (1, deck1)
         | ([],_) -> (2, deck2)
         | (x1::xs1, x2::xs2) when x1 > xs1.Length || x2 > xs2.Length ->
-            if x1 > x2 then (1, deck1) else (2, deck2)
+            pastRounds' 
+            |> if x1 > x2 
+                then recursiveCombat (xs1@[x1;x2]) xs2
+                else recursiveCombat xs1 (xs2@[x2;x1])
         | (x1::xs1, x2::xs2) ->
             let deck1' = xs1 |> List.take x1
             let deck2' = xs2 |> List.take x2
-            match (recursiveCombat deck1' deck2' pastRounds') with
-            | (1, _) -> recursiveCombat (xs1@[x1;x2]) xs2 pastRounds'
-            | (2, _) -> recursiveCombat xs1 (xs2@[x2;x1]) pastRounds'
-            | _ -> failwith "Impossible winner"
+            pastRounds'
+            |> match (recursiveCombat deck1' deck2' Set.empty) with
+                | (1, _) -> recursiveCombat (xs1@[x1;x2]) xs2
+                | (2, _) -> recursiveCombat xs1 (xs2@[x2;x1])
+                | _ -> failwith "Impossible winner"
 
 let result2 deck1 deck2 =
     let (winner, deck) = recursiveCombat deck1 deck2 Set.empty
