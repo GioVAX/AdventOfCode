@@ -71,9 +71,9 @@ let scoreDeck deck =
     deck
     |> List.rev
     |> List.indexed
-    |> List.foldBack (fun (i,v) s -> s + ((i+1)*v |> bigint)) <| 0I
+    |> List.foldBack (fun (i,v) s -> s + ((i+1)*v)) <| 0
 
-let result1 =
+let result1 deck1 deck2 =
     let winner = playGame deck1 deck2
     scoreDeck winner
 
