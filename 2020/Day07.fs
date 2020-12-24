@@ -630,13 +630,16 @@ let createMap input =
 
 let rec walkTheMap map start =
     match map |> Map.tryFind start with
-    | Some nextSteps ->
-        start::(nextSteps |> List.collect (walkTheMap map))
-    | None -> []
+    | Some (true, _) -> []
+    | Some (_, nextSteps) ->
+        let map' = map |> Map.add start (true, nextSteps)
+        start::(nextSteps |> List.collect (walkTheMap map'))
+    | None -> [start]
     
 let result1 input =
     let map = createMap input
-    let bags = "shiny gold" |> walkTheMap  map
+    let map' = map |> Map.map (fun _ v -> (false, v))
+    let bags = "shiny gold" |> walkTheMap  map'
     bags
 
 let result2 =

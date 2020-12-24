@@ -54,12 +54,12 @@ let ``createMap tests`` () =
 [<Fact>]
 let ``walkTheMap tests`` () =
     let map =
-        testData.[0..1] 
-        |> Seq.take 2
+        testData 
         |> createMap
+        |> Map.map (fun _ v -> (false, v))
     
-    walkTheMap map "muted yellow"
-    |> should matchList ["muted yellow"; "light red"; "dark orange"]
+    walkTheMap map "shiny gold"
+    |> should matchList ["shiny gold"; "bright white"; "muted yellow"; "light red"; "dark orange"]
 
 
 [<Theory>]
