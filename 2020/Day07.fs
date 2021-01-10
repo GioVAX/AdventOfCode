@@ -612,16 +612,13 @@ let parse s =
         {Color= map.["container"].Head; Contains=map.["contained"]}
     | _ -> failwith ("Syntax error - " + s)
 
-let safeAppendToMap value map key =
-    let oldValue =
-        match map |> Map.tryFind key with
-        | Some value -> value
-        | None -> []
-    map |> Map.add key (value::oldValue)
+let safeValue key map =
+    match map |> Map.tryFind key with
+    | Some value -> value
+    | None -> []
 
 let addBagToMap (map:Map<string, string list>) bag =
-    bag.Contains
-    |> List.fold (safeAppendToMap bag.Color) map
+    map |> Map.add bag.Color (bag.Contains |> List.append (safeValue bag.Color map))
 
 let createMap input = 
     input
@@ -629,18 +626,18 @@ let createMap input =
     |> Seq.fold addBagToMap Map.empty
 
 let rec walkTheMap map start =
-    match map |> Map.tryFind start with
-    | Some (true, _) -> []
-    | Some (_, nextSteps) ->
-        let map' = map |> Map.add start (true, nextSteps)
-        start::(nextSteps |> List.collect (walkTheMap map'))
-    | None -> [start]
+    let rec f map s = 
+        match map |> Map.tryFind s with
+        | Some nextSteps ->
+            let map' = map |> Map.remove s
+            s::(nextSteps |> List.collect (f map'))
+        | None -> []
+    List.collect (f map) [start]
     
 let result1 input =
     let map = createMap input
-    let map' = map |> Map.map (fun _ v -> (false, v))
-    let bags = "shiny gold" |> walkTheMap  map'
-    bags
+    let bags = "shiny gold" |> walkTheMap  map
+    bags |> Set.ofList |> Set.count
 
-let result2 =
-    2
+// let result2 =
+//     2

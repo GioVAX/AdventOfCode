@@ -56,13 +56,17 @@ let ``walkTheMap tests`` () =
     let map =
         testData 
         |> createMap
-        |> Map.map (fun _ v -> (false, v))
     
     walkTheMap map "shiny gold"
     |> should matchList ["shiny gold"; "bright white"; "muted yellow"; "light red"; "dark orange"]
 
 
-[<Theory>]
-[<InlineData(12, 2)>]
-let ``Test case 2`` (p1, p2) =
-    [] |> should matchList []
+[<Fact>]
+let ``result1 test`` () =
+    result1 testData 
+    |> should equal 4
+    
+// [<Theory>]
+// [<InlineData(12, 2)>]
+// let ``Test case 2`` (p1, p2) =
+//     [] |> should matchList []
