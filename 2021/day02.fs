@@ -29,16 +29,23 @@ let executeCommand (x0, y0) = function
     | Down n -> (x0, y0 + n)
     | Up n -> (x0, y0 - n)
 
-let baseAlgorithm input executer = 
+let solvePart1 input =
     let (x, y) = 
         input
         |> List.map parse
-        |> List.fold executer (0, 0)
+        |> List.fold executeCommand (0, 0)
 
     (abs x) * (abs y)
 
-let solvePart1 input =
-    baseAlgorithm input executeCommand
+let executeCommand' (x0, y0, a0) = function
+    | Forward n -> (x0 + n, y0 + (a0*n), a0)
+    | Down n -> (x0, y0, a0 + n)
+    | Up n -> (x0, y0, a0 - n)
 
 let solvePart2 input = 
-    150
+    let (x, y, _) = 
+        input
+        |> List.map parse
+        |> List.fold executeCommand' (0, 0, 0)
+
+    (abs x) * (abs y)
