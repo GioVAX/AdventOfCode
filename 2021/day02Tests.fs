@@ -11,3 +11,7 @@ let testInput =
 [<Fact>]
 let ``solvePart1 with the testInput SHOULD return 150`` () =
     solvePart1 testInput |> should equal 150
+
+[<Fact>]
+let ``solvePart2 with the testInput SHOULD return 900`` () =
+    solvePart2 testInput |> should equal 900

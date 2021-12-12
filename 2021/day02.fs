@@ -39,3 +39,6 @@ let baseAlgorithm input executer =
 
 let solvePart1 input =
     baseAlgorithm input executeCommand
+
+let solvePart2 input = 
+    150
