@@ -13,3 +13,9 @@ let ``solvePart1 with the testInput SHOULD return 198`` () =
     testInput
     |> solvePart1
     |> should equal 198
+
+[<Fact>]
+let ``solvePart2 with the testInput SHOULD return 230`` () =
+    testInput
+    |> solvePart2
+    |> should equal 230

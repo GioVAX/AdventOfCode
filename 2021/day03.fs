@@ -27,3 +27,5 @@ let solvePart1 readings =
             (fun (g, e) n -> if n > threshold then (g+string '0', e+string '1') else (g+string '1', e+string '0'))
             ("0b", "0b")
     (int gamma)*(int epsilon)
+
+let solvePart2 readings = 230
