@@ -1,6 +1,5 @@
 module day01Tests
 
-open System
 open FsUnit.Xunit
 open Xunit
 
