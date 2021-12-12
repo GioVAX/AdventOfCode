@@ -9,3 +9,8 @@ let solvePart1 : int list ->int =
     List.pairwise
     >> List.map (fun (a, b) -> if a < b then 1 else 0)
     >> List.sum
+
+let solvePart2 : int list ->int = 
+    List.windowed 3
+    >> List.map List.sum
+    >> solvePart1
