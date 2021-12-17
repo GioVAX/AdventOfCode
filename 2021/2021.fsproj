@@ -5,6 +5,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Utils.fs" />
     <Compile Include="day01.fs" />
     <Compile Include="day01Tests.fs" />
     <Compile Include="day02.fs" />
