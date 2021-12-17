@@ -62,6 +62,7 @@ let oxigenRate readings =
         | 0 -> '1'
         | x when x < 0 -> '1'
         | x when x > 0 -> '0'
+        | _ -> failwith "Impossible"
 
     let rate = 
         "0b" +
@@ -74,6 +75,7 @@ let co2Rate readings =
         | 0 -> '0'
         | x when x < 0 -> '0'
         | x when x > 0 -> '1'
+        | _ -> failwith "Impossible"
     
     let rate = 
         "0b" +
