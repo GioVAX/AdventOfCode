@@ -28,4 +28,57 @@ let solvePart1 readings =
             ("0b", "0b")
     (int gamma)*(int epsilon)
 
-let solvePart2 readings = 230
+let filterReadings idx value =
+    List.filter
+        (fun (r:string) -> r[idx] = value)
+
+let rec reduce idx selector = function
+    | [] -> failwith "Empty list"
+    | [r] -> r
+    | readings ->
+        let bits = 
+            readings
+            |> slice idx
+            |> List.groupBy id
+            |> Map.ofList
+        let zeros = 
+            match bits |> Map.tryFind '0' with
+            | Some l -> List.length l
+            | None -> 0
+
+        let ones = 
+            match bits |> Map.tryFind '1' with
+            | Some l -> List.length l
+            | None -> 0
+
+        let c = selector zeros ones 
+
+        (filterReadings idx c readings)
+        |> reduce (idx+1) selector 
+
+let oxigenRate readings = 
+    let oxigenSelector zeros ones =
+        match zeros - ones with
+        | 0 -> '1'
+        | x when x < 0 -> '1'
+        | x when x > 0 -> '0'
+
+    let rate = 
+        "0b" +
+            (readings |> reduce 0 oxigenSelector)    
+    int rate
+
+let co2Rate readings = 
+    let co2Selector zeros ones =
+        match zeros - ones with
+        | 0 -> '0'
+        | x when x < 0 -> '0'
+        | x when x > 0 -> '1'
+    
+    let rate = 
+        "0b" +
+            (readings |> reduce 0 co2Selector)    
+    int rate
+
+let solvePart2 readings =
+    (oxigenRate readings) * (co2Rate readings)
