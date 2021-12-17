@@ -1,5 +1,7 @@
 module Day05
 
+open Microsoft.FSharp.Math
+
 open Utils;
 
 let input =
@@ -16,11 +18,17 @@ let parse = function
         (p1, p2)
     | _ -> failwith "parse error"
 
-let generatePoints (Point(x1, y1)) (Point(x2, y2)) =
-    if x1 = x2 
-        then [for y in [y1..y2] do yield Point (x1, y)]
-        else 
-            if y1 = y2 then [for x in [x1..x2] do yield Point(x, y1)]
-            else []
+let generatePoints p1 p2 =
+    match (p1, p2) with
+    | (Point(x1, y1)), (Point(x2, y2)) when x1 = x2 ->
+        [for y in [(min y1 y2)..(max y1 y2)] do yield Point (x1, y)]
+    | (Point(x1, y1)), (Point(x2, y2)) when y1 = y2 ->
+        [for x in [(min x1 x2)..(max x1 x2)] do yield Point(x, y1)]
+    | _ -> []
 
-let solvePart1 input = 6
+let solvePart1 =
+    List.map parse
+    >> List.collect (fun (p1, p2) -> generatePoints p1 p2)
+    >> List.groupBy id
+    >> List.filter (fun (_, ps) -> ps |> List.length > 1)
+    >> List.length
