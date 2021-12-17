@@ -23,3 +23,14 @@ let testInput =
 let ``parse first test item SHOULD return the expected result`` () =
     let result = parse "0,9 -> 5,9"
     result |> should equal (Point(0,9), Point(5,9))
+
+[<Fact>]
+let ``generatePoints with first teest item SHOULD return the expected result`` () =
+    let (p1, p2) = "0,9 -> 5,9" |> parse
+    let result = generatePoints p1 p2
+    result |> should equal [Point(0,9); Point(1,9); Point(2,9); Point(3,9); Point(4,9); Point(5,9)]
+
+[<Fact(Skip="wait")>]
+let ``solvePart1 with testInput SHOULD result 5`` () =
+    let result = solvePart1 testInput
+    result |> should equal 5
