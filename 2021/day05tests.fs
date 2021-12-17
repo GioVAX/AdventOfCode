@@ -26,8 +26,11 @@ let ``parse first test item SHOULD return the expected result`` () =
 
 [<Fact>]
 let ``generatePoints with first teest item SHOULD return the expected result`` () =
-    let (p1, p2) = "0,9 -> 5,9" |> parse
-    let result = generatePoints p1 p2
+    let result = 
+        "0,9 -> 5,9" 
+        |> parse
+        |> generatePoints
+
     result |> should equal [Point(0,9); Point(1,9); Point(2,9); Point(3,9); Point(4,9); Point(5,9)]
 
 [<Fact>]

@@ -18,8 +18,7 @@ let parse = function
         (p1, p2)
     | _ -> failwith "parse error"
 
-let generatePoints p1 p2 =
-    match (p1, p2) with
+let generatePoints = function
     | (Point(x1, y1)), (Point(x2, y2)) when x1 = x2 ->
         [for y in [(min y1 y2)..(max y1 y2)] do yield Point (x1, y)]
     | (Point(x1, y1)), (Point(x2, y2)) when y1 = y2 ->
@@ -28,7 +27,7 @@ let generatePoints p1 p2 =
 
 let solvePart1 =
     List.map parse
-    >> List.collect (fun (p1, p2) -> generatePoints p1 p2)
+    >> List.collect generatePoints
     >> List.groupBy id
     >> List.filter (fun (_, ps) -> ps |> List.length > 1)
     >> List.length
