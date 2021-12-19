@@ -34,6 +34,20 @@ let ``generateLines with first teest item SHOULD return the expected result`` ()
     result |> should equal [Point(0,9); Point(1,9); Point(2,9); Point(3,9); Point(4,9); Point(5,9)]
 
 [<Fact>]
+let ``generateLines' 0,8 8,0 SHOULD return the expected result`` () =
+    let result = 
+        "0,8 -> 8,0" 
+        |> parse
+        |> generateLines'
+
+    result |> should equal [Point(0,8); Point(1,7); Point(2,6); Point(3,5); Point(4,4); Point(5,3); Point(6,2); Point(7,1); Point(8,0)]
+
+[<Fact>]
 let ``solvePart1 with testInput SHOULD result 5`` () =
     let result = solvePart1 testInput
     result |> should equal 5
+
+[<Fact>]
+let ``solvePart2 with testInput SHOULD result 12`` () =
+    let result = solvePart2 testInput
+    result |> should equal 12

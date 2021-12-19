@@ -18,16 +18,59 @@ let parse = function
         (p1, p2)
     | _ -> failwith "parse error"
 
+let direction n1 n2 =
+    if n1 < n2 then 1 else -1
+
 let generateLines = function
     | (Point(x1, y1)), (Point(x2, y2)) when x1 = x2 ->
-        [for y in [(min y1 y2)..(max y1 y2)] do yield Point (x1, y)]
+        [for y in [y1..(direction y1 y2)..y2] do yield Point (x1, y)]
     | (Point(x1, y1)), (Point(x2, y2)) when y1 = y2 ->
-        [for x in [(min x1 x2)..(max x1 x2)] do yield Point(x, y1)]
+        [for x in [x1..(direction x1 x2)..x2] do yield Point(x, y1)]
     | _ -> []
 
-let solvePart1 =
+let generateLines' ((Point(x1, y1) as p1), (Point(x2, y2) as p2)) =
+    match generateLines (p1,p2) with
+    | [] ->
+        let xs = [x1..(direction x1 x2)..x2]
+        let ys = [y1..(direction y1 y2)..y2]
+
+        List.zip xs ys
+        |> List.map Point
+    | xs -> xs
+
+let baseAlgo generator =
     List.map parse
-    >> List.collect generateLines
+    >> List.collect generator
     >> List.groupBy id
     >> List.filter (fun (_, ps) -> ps |> List.length > 1)
     >> List.length
+
+let visualize lines =
+    let points = 
+        lines
+        |> List.map parse
+        |> List.collect generateLines'
+        |> List.groupBy id
+        |> Map.ofList
+
+    let max = 
+        points
+        |> Map.fold
+            (fun max' (Point(x1, y1)) _ ->
+                (max x1 (max y1 max')))
+            0
+            
+    [for x in [0..max] do
+        let line = 
+            [for y in [0..max] do
+                match Map.tryFind (Point(x,y)) points with
+                | Some l -> 
+                    (l |> (List.length)) + 48 |> char |> string
+                | None -> "."
+            ]
+        yield System.String.Concat line
+    ]
+
+let solvePart1 = baseAlgo generateLines
+
+let solvePart2 = baseAlgo generateLines'
