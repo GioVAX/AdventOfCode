@@ -16,9 +16,27 @@ let dayIteration fishes _ =
             | _ -> [daysToHatch-1]
         )
 
+let rec computeGenerations daysToHatch daysToGo =
+    let firstBirth = daysToGo - daysToHatch
+
+    1I +
+    match firstBirth with
+    | n when n < 1 -> 0I  // not enough time left to hatch
+    | _ -> 
+        [firstBirth .. -7 .. 0]
+            |> List.map (computeGenerations 9)
+            |> List.sum
+    
 let solvePart1 (input:string) =
     let state0 = parse input
 
     [1..80]
     |> List.fold dayIteration state0
     |> List.length
+
+// let solvePart2 (input:string) =
+//     let state0 = parse input
+
+//     [1..256]
+//     |> List.fold dayIteration state0
+//     |> List.length
