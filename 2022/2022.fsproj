@@ -12,6 +12,8 @@
     <Compile Include="Day02Tests.fs" />
     <Compile Include="Day03.fs" />
     <Compile Include="Day03Tests.fs" />
+    <Compile Include="Day04.fs" />
+    <Compile Include="Day04Tests.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FsCheck.Xunit" Version="2.16.5" />
