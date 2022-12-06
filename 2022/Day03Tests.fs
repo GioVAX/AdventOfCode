@@ -12,3 +12,16 @@ let testInput = readData "..\\..\\..\\Day03InputTest.txt"
 let ``part1 with the testInput SHOULD return 157`` () =
     part1 testInput
     |>  should equal 157
+
+[<Fact>]
+let ``findCommons`` () =
+    findCommons "abcdefg" "jkdkia"
+    |> Seq.toArray
+    |> System.String
+    |> should equal "ad"
+
+
+[<Fact>]
+let ``part2 with the testInput SHOULD return 70`` () =
+    part2 testInput
+    |>  should equal 70
