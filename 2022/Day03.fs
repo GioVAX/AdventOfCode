@@ -10,8 +10,7 @@ let findCommon (s1, s2) =
 let findCommons (s1:string) (s2:string) =
     s1
     |> Seq.filter (fun c -> s2 |> Seq.contains c)
-    |> Seq.toArray
-    |> System.String
+    |> Utils.seqToString
         
 let priority c =
     let priorityList = ' ' :: (List.append ['a'..'z'] ['A'..'Z'])
@@ -21,8 +20,7 @@ let part1 =
     List.map (split >> findCommon >> priority)
     >> List.sum
 
-let part2 (s: string list)=
-    s |>
-    (List.chunkBySize 3
+let part2 =
+    List.chunkBySize 3
     >> List.map (fun g -> (g |> List.reduce findCommons) |> Seq.head |> priority)
-    >> List.sum)
+    >> List.sum

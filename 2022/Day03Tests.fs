@@ -16,10 +16,8 @@ let ``part1 with the testInput SHOULD return 157`` () =
 [<Fact>]
 let ``findCommons`` () =
     findCommons "abcdefg" "jkdkia"
-    |> Seq.toArray
-    |> System.String
+    |> Utils.seqToString
     |> should equal "ad"
-
 
 [<Fact>]
 let ``part2 with the testInput SHOULD return 70`` () =
