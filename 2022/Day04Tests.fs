@@ -18,3 +18,8 @@ let ``convert 1`` () =
 let ``part1 with the testInput SHOULD return 2`` () =
     Day04.part1 testInput
     |> should equal 2
+
+[<Fact>]
+let ``part2 with the testInput SHOULD return 4`` () =
+    Day04.part2 testInput
+    |> should equal 4

@@ -25,8 +25,22 @@ let fullOverlap = function
         ||
         (i.begin2 <= i.begin1 && i.end2 >= i.end1)
 
-let part1 lines =
-    lines
-    |> List.map convert
-    |> List.filter fullOverlap
-    |> List.length
+let partialOverlap = function
+    | None -> false
+    | Some i as x ->
+        fullOverlap x
+        ||
+        (i.begin1 < i.begin2 && i.end1>= i.begin2 && i.end1 <= i.end2)
+        ||
+        (i.begin2 < i.begin1 && i.end2>= i.begin1 && i.end2 <= i.end1)
+
+let private processor f =
+    List.map convert
+    >> List.filter f
+    >> List.length
+
+let part1 =
+    processor fullOverlap
+
+let part2 =
+    processor partialOverlap
