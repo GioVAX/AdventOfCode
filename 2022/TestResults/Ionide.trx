@@ -1,34 +1,55 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TestRun id="ff313cd1-6be1-4fc8-b560-c119b1e1e987" name="giova@GIOVAXNITRO 2022-12-06 09:22:35" runUser="GIOVAXNITRO\giova" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <Times creation="2022-12-06T09:22:35.5222334+01:00" queuing="2022-12-06T09:22:35.5222338+01:00" start="2022-12-06T09:22:34.0259725+01:00" finish="2022-12-06T09:22:35.5339703+01:00" />
-  <TestSettings name="default" id="0581324b-c00a-48da-abb2-2fa736504ae3">
-    <Deployment runDeploymentRoot="giova_GIOVAXNITRO_2022-12-06_09_22_35" />
+<TestRun id="b092886b-eae1-42dd-a76b-58c989a48717" name="giova@GIOVAXNITRO 2022-12-06 23:52:06" runUser="GIOVAXNITRO\giova" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2022-12-06T23:52:06.8475496+01:00" queuing="2022-12-06T23:52:06.8475498+01:00" start="2022-12-06T23:52:05.2442532+01:00" finish="2022-12-06T23:52:06.8566957+01:00" />
+  <TestSettings name="default" id="c8f7fad9-a8cc-481a-9266-9161cd02f899">
+    <Deployment runDeploymentRoot="giova_GIOVAXNITRO_2022-12-06_23_52_06" />
   </TestSettings>
   <Results>
-    <UnitTestResult executionId="04cf78bb-c337-4515-9ec0-f8ba7777cbc8" testId="5eb6242c-541e-dde7-9fcc-5b50dcd35ff6" testName="Day03Tests.part2 with the testInput SHOULD return 70" computerName="GIOVAXNITRO" duration="00:00:00.0370476" startTime="2022-12-06T09:22:35.3610383+01:00" endTime="2022-12-06T09:22:35.3610652+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="04cf78bb-c337-4515-9ec0-f8ba7777cbc8" />
+    <UnitTestResult executionId="b2119bb7-2135-44af-8f67-b6dc5274887e" testId="0118b063-7864-5e1a-0e49-95370630fc09" testName="Day04Tests.convert 1" computerName="GIOVAXNITRO" duration="00:00:00.0498732" startTime="2022-12-06T23:52:06.7177737+01:00" endTime="2022-12-06T23:52:06.7177932+01:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b2119bb7-2135-44af-8f67-b6dc5274887e">
+      <Output>
+        <ErrorInfo>
+          <Message>FsUnit.Xunit+MatchException : Exception of type 'FsUnit.Xunit+MatchException' was thrown.&#xD;
+Expected: Equals ([1; 3], [5; 6])&#xD;
+Actual:   [(1, 3); (5, 6)]</Message>
+          <StackTrace>   at FsUnit.Xunit.Assert.That.Static[a](a actual, IMatcher`1 matcher)&#xD;
+   at Day04Tests.convert 1() in c:\Users\giova\source\repos\GioVAX\AdventOfCode\2022\Day04Tests.fs:line 14</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
   </Results>
   <TestDefinitions>
-    <UnitTest name="Day03Tests.part2 with the testInput SHOULD return 70" storage="c:\users\giova\source\repos\giovax\adventofcode\2022\bin\debug\net6.0\2022.dll" id="5eb6242c-541e-dde7-9fcc-5b50dcd35ff6">
-      <Execution id="04cf78bb-c337-4515-9ec0-f8ba7777cbc8" />
-      <TestMethod codeBase="c:\Users\giova\source\repos\GioVAX\AdventOfCode\2022\bin\Debug\net6.0\2022.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Day03Tests" name="part2 with the testInput SHOULD return 70" />
+    <UnitTest name="Day04Tests.convert 1" storage="c:\users\giova\source\repos\giovax\adventofcode\2022\bin\debug\net6.0\2022.dll" id="0118b063-7864-5e1a-0e49-95370630fc09">
+      <Execution id="b2119bb7-2135-44af-8f67-b6dc5274887e" />
+      <TestMethod codeBase="c:\Users\giova\source\repos\GioVAX\AdventOfCode\2022\bin\Debug\net6.0\2022.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="Day04Tests" name="convert 1" />
     </UnitTest>
   </TestDefinitions>
   <TestEntries>
-    <TestEntry testId="5eb6242c-541e-dde7-9fcc-5b50dcd35ff6" executionId="04cf78bb-c337-4515-9ec0-f8ba7777cbc8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0118b063-7864-5e1a-0e49-95370630fc09" executionId="b2119bb7-2135-44af-8f67-b6dc5274887e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
   </TestEntries>
   <TestLists>
     <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
     <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
   </TestLists>
-  <ResultSummary outcome="Completed">
-    <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
     <Output>
       <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.4.5+1caef2f33e (64-bit .NET 6.0.9)&#xD;
-[xUnit.net 00:00:00.58]   Discovering: 2022&#xD;
-[xUnit.net 00:00:00.62]   Discovered:  2022&#xD;
-[xUnit.net 00:00:00.63]   Starting:    2022&#xD;
-[xUnit.net 00:00:00.73]   Finished:    2022&#xD;
+[xUnit.net 00:00:00.72]   Discovering: 2022&#xD;
+[xUnit.net 00:00:00.76]   Discovered:  2022&#xD;
+[xUnit.net 00:00:00.76]   Starting:    2022&#xD;
+[xUnit.net 00:00:00.89]       FsUnit.Xunit+MatchException : Exception of type 'FsUnit.Xunit+MatchException' was thrown.&#xD;
+[xUnit.net 00:00:00.89]       Expected: Equals ([1; 3], [5; 6])&#xD;
+[xUnit.net 00:00:00.89]       Actual:   [(1, 3); (5, 6)]&#xD;
+[xUnit.net 00:00:00.89]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.89]            at FsUnit.Xunit.Assert.That.Static[a](a actual, IMatcher`1 matcher)&#xD;
+[xUnit.net 00:00:00.89]         c:\Users\giova\source\repos\GioVAX\AdventOfCode\2022\Day04Tests.fs(14,0): at Day04Tests.convert 1()&#xD;
+[xUnit.net 00:00:00.90]   Finished:    2022&#xD;
 </StdOut>
     </Output>
+    <RunInfos>
+      <RunInfo computerName="GIOVAXNITRO" outcome="Error" timestamp="2022-12-06T23:52:06.7095917+01:00">
+        <Text>[xUnit.net 00:00:00.89]     Day04Tests.convert 1 [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
   </ResultSummary>
 </TestRun>
