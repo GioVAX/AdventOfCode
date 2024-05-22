@@ -2,28 +2,45 @@ module Day05
 
 open System.Text.RegularExpressions
 
-let endOfConfig numStacks =
+open Utils
+
+let createEndOfConfig numStacks =
     let x = [for i in 1..numStacks -> " " + string i + " "]
     System.String.Join(' ', x)
 
 let regexForConfig = "(   )|\\[([A-Z])]"
 
-let readConfigLine s =
+let readConfigLine s  =
     Regex.Split(s, regexForConfig)
     |> Array.chunkBySize 2
-    |> Array.filter (fun l -> l.Length = 2)
-    |> Array.map (fun l -> 
-        match l[1] with
-        | "   " -> ""
-        | s -> s)
+    |> Array.filter (fun a -> a.Length = 2)
+    |> Array.mapi (fun idx a -> (idx, a[1][0]))
 
-let initialConfigParser (lines: string list) numStacks : char list array =
-    let output = Array.init numStacks (fun _ -> []:char list)
+let loadConfigStacks (stacks:array<stack<char>>) (idx, letter) =
+    match letter with
+    | ' ' -> stacks
+    | s -> 
+        stacks.[idx] <- push s stacks.[idx]
+        stacks
 
-    let eoc = endOfConfig numStacks
-
-    let config = 
+let parseInitialConfig lines numStacks configLineIndex //: array<stack<char>>
+ =
+    let configLines = 
         lines
-        |> List.takeWhile (fun l -> l.Equals(endOfConfig))
+        |> List.take configLineIndex
         |> List.map readConfigLine
+
+    let initialConfig =
+        List.foldBack 
+            (fun l s -> l |> Array.fold loadConfigStacks s)
+            configLines
+            (Array.init numStacks (fun _ -> emptyStack))
     
+    initialConfig
+
+
+let findSplittingLine lines numStacks =
+    let endOfConfig = createEndOfConfig numStacks
+
+    lines |> List.findIndex ((=) endOfConfig)
+
