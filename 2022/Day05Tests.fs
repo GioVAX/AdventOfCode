@@ -63,3 +63,8 @@ let ``parseInitialConfig with test input`` () =
 
     parseInitialConfig testInput 3 endOfConfigIdx
     |> should equal expected
+
+[<Fact>]
+let ``parse a command line`` () =
+    readCommandLine "move 311 from 12 to 2"
+    |> should equal {number=311; source=12; dest=2}

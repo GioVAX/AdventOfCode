@@ -4,13 +4,19 @@ open System.Text.RegularExpressions
 
 open Utils
 
+type MoveCommand = {
+    number: int;
+    source: int;
+    dest: int;
+}
+
 let createEndOfConfig numStacks =
     let x = [for i in 1..numStacks -> " " + string i + " "]
     System.String.Join(' ', x)
 
-let regexForConfig = "(   )|\\[([A-Z])]"
 
 let readConfigLine s  =
+    let regexForConfig = "(   )|\\[([A-Z])]"
     Regex.Split(s, regexForConfig)
     |> Array.chunkBySize 2
     |> Array.filter (fun a -> a.Length = 2)
@@ -30,13 +36,13 @@ let parseInitialConfig lines numStacks configLineIndex //: array<stack<char>>
         |> List.take configLineIndex
         |> List.map readConfigLine
 
-    let initialConfig =
+    let initialStackConfig =
         List.foldBack 
             (fun l s -> l |> Array.fold loadConfigStacks s)
             configLines
             (Array.init numStacks (fun _ -> emptyStack))
     
-    initialConfig
+    initialStackConfig
 
 
 let findSplittingLine lines numStacks =
@@ -44,3 +50,9 @@ let findSplittingLine lines numStacks =
 
     lines |> List.findIndex ((=) endOfConfig)
 
+let readCommandLine line = 
+    match line with
+    | Utils.Regex @"(?<number>\d*) from (?<from>\d*) to (?<to>\d*)" [n;s;d] ->
+        {number=int n; source= int s; dest=int d}
+    | _ ->
+        failwith "Parser error"
