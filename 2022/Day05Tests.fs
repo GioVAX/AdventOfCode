@@ -104,3 +104,15 @@ let ``apply a command that moves multiple crates`` () =
     applyMoveCommand initial cmd
     |> should equal expected
         
+[<Fact>]
+let ``Read top of all stacks`` () =
+    let initial =
+        [| emptyStack |> push 'Z' |> push 'N'
+           emptyStack |> push 'M' |> push 'C' |> push 'D'
+           emptyStack |> push 'P' |]
+
+    readInitials initial
+    |> should equal "NDP"
+
+// let ``part 1 with test input SHOULD return "CMZ"`` () =
+    

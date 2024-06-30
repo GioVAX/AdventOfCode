@@ -79,3 +79,8 @@ let applyMoveCommand (status:array<stack<char>>) (cmd:MoveCommand) =
 
     status
     |> Array.mapi (moveCrates cmd)
+
+let readInitials (stacks:array<stack<char>>) =
+    stacks
+    |> Array.map (fun s -> s.value.Value |> string)
+    |> Array.reduce (+)
