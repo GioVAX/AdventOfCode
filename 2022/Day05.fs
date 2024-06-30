@@ -58,12 +58,10 @@ let readCommandLine line =
         failwith "Parser error"
 
 let getCrates stack n = 
-    let (l,s) =
-        [1..n]
-        |> List.fold 
-            (fun (l, s) _ -> (s.value.Value::l, pop s))
-            ([],stack)
-    (l |> List.rev, s)
+    [1..n]
+    |> List.fold 
+        (fun (l, s) _ -> (s.value.Value::l, pop s))
+        ([],stack)
 
 let applyMoveCommand (status:array<stack<char>>) (cmd:MoveCommand) =
     let (moved, remaining) = getCrates status.[cmd.source-1] cmd.number
@@ -73,6 +71,7 @@ let applyMoveCommand (status:array<stack<char>>) (cmd:MoveCommand) =
         | _ when idx+1 = cmd.source -> remaining
         | _ when idx+1 = cmd.dest -> 
             moved
+                |> List.rev
                 |> List.fold (fun stack crate -> push crate stack)
                 stack
         | _ -> stack
