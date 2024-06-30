@@ -165,3 +165,7 @@ let ``apply a command that moves multiple crates for part 2`` () =
     applyMoveCommand2 initial cmd
     |> should equal expected
     
+[<Fact>]
+let ``part 2 with test input SHOULD return "MCD"`` () =
+    part2 testInput 3
+    |> should equal "MCD"

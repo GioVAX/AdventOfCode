@@ -103,3 +103,17 @@ let part1 input numStacks =
             applyMoveCommand s cmd
         ) stacks
     |> readInitials
+
+let part2 input numStacks =
+    let splitLineIdx = findSplittingLine input numStacks
+    let stacks = parseInitialConfig input numStacks splitLineIdx
+
+    input
+    |> List.skip (splitLineIdx + 2)
+    |> List.fold
+        (fun s line -> 
+            let cmd = readCommandLine line
+            applyMoveCommand2 s cmd
+        ) stacks
+    |> readInitials
+    
