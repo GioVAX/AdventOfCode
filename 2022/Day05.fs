@@ -84,3 +84,16 @@ let readInitials (stacks:array<stack<char>>) =
     stacks
     |> Array.map (fun s -> s.value.Value |> string)
     |> Array.reduce (+)
+
+let part1 input numStacks =
+    let splitLineIdx = findSplittingLine input numStacks
+    let stacks = parseInitialConfig input numStacks splitLineIdx
+
+    input
+    |> List.skip (splitLineIdx + 2)
+    |> List.fold
+        (fun s line -> 
+            let cmd = readCommandLine line
+            applyMoveCommand s cmd
+        ) stacks
+    |> readInitials

@@ -114,5 +114,8 @@ let ``Read top of all stacks`` () =
     readInitials initial
     |> should equal "NDP"
 
-// let ``part 1 with test input SHOULD return "CMZ"`` () =
+[<Fact>]
+let ``part 1 with test input SHOULD return "CMZ"`` () =
+    part1 testInput 3
+    |> should equal "CMZ"
     
