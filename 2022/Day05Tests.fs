@@ -88,3 +88,19 @@ let ``apply a command that moves 1 crate`` () =
     
     applyMoveCommand initial cmd
     |> should equal expected
+
+[<Fact>]
+let ``apply a command that moves multiple crates`` () =
+    let initial =
+        [| emptyStack |> push 'Z' |> push 'N'
+           emptyStack |> push 'M' |> push 'C' |> push 'D'
+           emptyStack |> push 'P' |]
+    let cmd = {number=2; source=2; dest=1}
+    let expected =
+        [| emptyStack |> push 'Z' |> push 'N' |> push 'D'  |> push 'C'
+           emptyStack |> push 'M'
+           emptyStack |> push 'P' |]
+
+    applyMoveCommand initial cmd
+    |> should equal expected
+        
