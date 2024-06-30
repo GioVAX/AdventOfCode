@@ -61,10 +61,30 @@ let ``parseInitialConfig with test input`` () =
 
     let endOfConfigIdx = findSplittingLine testInput 3
 
-    parseInitialConfig testInput 3 endOfConfigIdx
+    let stacks = parseInitialConfig testInput 3 endOfConfigIdx
+    
+    stacks 
     |> should equal expected
+
+    stacks.[0].value
+    |> should equal (Some 'N')
 
 [<Fact>]
 let ``parse a command line`` () =
     readCommandLine "move 311 from 12 to 2"
     |> should equal {number=311; source=12; dest=2}
+
+[<Fact>]
+let ``apply a command that moves 1 crate`` () =
+    let initial =
+        [| emptyStack |> push 'Z' |> push 'N'
+           emptyStack |> push 'M' |> push 'C' |> push 'D'
+           emptyStack |> push 'P' |]
+    let cmd = {number=1; source=2; dest=1}
+    let expected =
+        [| emptyStack |> push 'Z' |> push 'N' |> push 'D' 
+           emptyStack |> push 'M' |> push 'C'
+           emptyStack |> push 'P' |]
+    
+    applyMoveCommand initial cmd
+    |> should equal expected

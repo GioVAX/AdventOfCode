@@ -56,3 +56,15 @@ let readCommandLine line =
         {number=int n; source= int s; dest=int d}
     | _ ->
         failwith "Parser error"
+
+let applyMoveCommand (status:array<stack<char>>) (cmd:MoveCommand) =
+    let moved = status.[cmd.source-1].value.Value
+
+    let moveCrate (cmd:MoveCommand) idx stack =
+        match idx with
+        | _ when idx+1 = cmd.source -> pop stack
+        | _ when idx+1 = cmd.dest -> push moved stack
+        | _ -> stack
+
+    status
+    |> Array.mapi (moveCrate cmd)
