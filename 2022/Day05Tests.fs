@@ -134,3 +134,34 @@ let ``part 1 with test input SHOULD return "CMZ"`` () =
     part1 testInput 3
     |> should equal "CMZ"
     
+[<Fact>]
+let ``apply a command that moves 1 crate for part 2`` () =
+    let initial =
+        [| emptyStack |> push 'Z' |> push 'N'
+           emptyStack |> push 'M' |> push 'C' |> push 'D'
+           emptyStack |> push 'P' |]
+    let cmd = {number=1; source=2; dest=1}
+    let expected =
+        [| emptyStack |> push 'Z' |> push 'N' |> push 'D' 
+           emptyStack |> push 'M' |> push 'C'
+           emptyStack |> push 'P' |]
+    
+    applyMoveCommand2 initial cmd
+    |> should equal expected
+    
+
+[<Fact>]
+let ``apply a command that moves multiple crates for part 2`` () =
+    let initial =
+        [| emptyStack |> push 'Z' |> push 'N' |> push 'D' 
+           emptyStack |> push 'M' |> push 'C'
+           emptyStack |> push 'P' |]
+    let cmd = {number=3; source=1; dest=3}
+    let expected =
+        [| emptyStack 
+           emptyStack |> push 'M' |> push 'C'
+           emptyStack |> push 'P' |> push 'Z' |> push 'N' |> push 'D'|]
+
+    applyMoveCommand2 initial cmd
+    |> should equal expected
+    

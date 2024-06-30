@@ -63,7 +63,8 @@ let getCrates stack n =
         (fun (l, s) _ -> (s.value.Value::l, pop s))
         ([],stack)
 
-let applyMoveCommand (status:array<stack<char>>) (cmd:MoveCommand) =
+
+let applyMove mapper (status:array<stack<char>>) (cmd:MoveCommand) =
     let (moved, remaining) = getCrates status.[cmd.source-1] cmd.number
 
     let moveCrates (cmd:MoveCommand) idx stack =
@@ -71,13 +72,19 @@ let applyMoveCommand (status:array<stack<char>>) (cmd:MoveCommand) =
         | _ when idx+1 = cmd.source -> remaining
         | _ when idx+1 = cmd.dest -> 
             moved
-                |> List.rev
+                |> mapper
                 |> List.fold (fun stack crate -> push crate stack)
                 stack
         | _ -> stack
 
     status
     |> Array.mapi (moveCrates cmd)
+
+let applyMoveCommand (status:array<stack<char>>) (cmd:MoveCommand) =
+    applyMove List.rev status cmd
+
+let applyMoveCommand2 (status:array<stack<char>>) (cmd:MoveCommand) =
+    applyMove id status cmd
 
 let readInitials (stacks:array<stack<char>>) =
     stacks
