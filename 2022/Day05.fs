@@ -16,11 +16,11 @@ let createEndOfConfig numStacks =
 
 
 let readConfigLine s  =
-    let regexForConfig = "(   )|\\[([A-Z])]"
+    let regexForConfig = "((   )|\\[([A-Z])])( |$)"
     Regex.Split(s, regexForConfig)
     |> Array.chunkBySize 2
-    |> Array.filter (fun a -> a.Length = 2)
-    |> Array.mapi (fun idx a -> (idx, a[1][0]))
+    |> Array.filter (fun a -> a.Length = 2 && a[1].Length=3)
+    |> Array.mapi (fun idx a -> (idx, a[1][1]))
 
 let loadConfigStacks (stacks:array<stack<char>>) (idx, letter) =
     match letter with

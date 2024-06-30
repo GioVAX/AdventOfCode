@@ -37,7 +37,7 @@ let ``readConfigLine 3 for 3 stacks`` () =
 
 
 [<Fact>]
-let ``readConfigLine for 9 stacks`` () =
+let ``readConfigLine for 9 stacks - simple line`` () =
     readConfigLine "    [G] [N] [H] [S] [B]     [R] [F]"
     |> should
         equal
@@ -50,6 +50,21 @@ let ``readConfigLine for 9 stacks`` () =
            (6, ' ')
            (7, 'R')
            (8, 'F') |]
+
+[<Fact>]
+let ``readConfigLine for 9 stacks - complex line`` () =
+    readConfigLine "        [H]         [S]         [D]"
+    |> should
+        equal
+        [| (0, ' ')
+           (1, ' ')
+           (2, 'H')
+           (3, ' ')
+           (4, ' ')
+           (5, 'S')
+           (6, ' ')
+           (7, ' ')
+           (8, 'D') |]
 
 [<Fact>]
 let ``parseInitialConfig with test input`` () =
