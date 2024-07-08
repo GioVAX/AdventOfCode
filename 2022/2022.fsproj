@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FsCheck.Xunit" Version="2.16.5" />
+    <PackageReference Include="fshttp" Version="14.5.0" />
     <PackageReference Include="Fsunit.Xunit" Version="5.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
     <PackageReference Include="Xunit" Version="2.4.2" />
