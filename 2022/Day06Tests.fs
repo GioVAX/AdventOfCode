@@ -22,16 +22,16 @@ let testInput =
 
 [<Fact>]
 let ``recognize all chars are different`` () =
-    containsNoRepeated "abcd" |> should equal true
+    containsNoRepeated 4 "abcd" |> should equal true
 
 [<Fact>]
 let ``recognize a repeated char`` () =
-    containsNoRepeated "abad" |> should equal false
+    containsNoRepeated 4 "abad" |> should equal false
 
 [<Fact>]
 let ``find window with repetition`` ()=
     "mjqjpqmgbljsphdztnvjfqwrcgsmlb"
-    |> findMarker
+    |> findMarker 4
     |> should equal 3
 
 [<Theory>]
@@ -41,5 +41,5 @@ let ``find window with repetition`` ()=
 [<InlineData("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg",10)>]
 [<InlineData("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw",11)>]
 let ``test part1`` data expected =
-    part1 data
+    part1 4 data
     |> should equal expected
