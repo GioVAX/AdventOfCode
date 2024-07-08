@@ -3,7 +3,7 @@ module Utils
 open FsHttp
 open System.Text.RegularExpressions
 
-let aoc_token="53616c7465645f5f11f1ae4157653608ee8c58b4a4c90b9cb9deb9c4e309ed179b38cc991e69cc916acad93e43e18f42ca25ebd9cd68cd85ac492981add30a39"
+let aoc_token="53616c7465645f5f784d956d893ee479aa2364da0139bda2be94787aa306270be56b9f8f2b0126206c56b077212f25f504965884efa94a486117932768943add"
 let fetchDayInput day =
     http {
         GET $"https://adventofcode.com/2022/day/%d{day}/input"

@@ -20,4 +20,26 @@ let testInput =
         {data="zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw";expected=11};
     ]
 
-// [<Fact>]
+[<Fact>]
+let ``recognize all chars are different`` () =
+    containsNoRepeated "abcd" |> should equal true
+
+[<Fact>]
+let ``recognize a repeated char`` () =
+    containsNoRepeated "abad" |> should equal false
+
+[<Fact>]
+let ``find window with repetition`` ()=
+    "mjqjpqmgbljsphdztnvjfqwrcgsmlb"
+    |> findMarker
+    |> should equal 3
+
+[<Theory>]
+[<InlineData("mjqjpqmgbljsphdztnvjfqwrcgsmlb",7)>]
+[<InlineData("bvwbjplbgvbhsrlpgdmjqwftvncz",5)>]
+[<InlineData("nppdvjthqldpwncqszvftbrmjlhg",6)>]
+[<InlineData("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg",10)>]
+[<InlineData("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw",11)>]
+let ``test part1`` data expected =
+    part1 data
+    |> should equal expected
