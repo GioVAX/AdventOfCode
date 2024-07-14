@@ -41,5 +41,15 @@ let ``find window with repetition`` ()=
 [<InlineData("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg",10)>]
 [<InlineData("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw",11)>]
 let ``test part1`` data expected =
-    part1 4 data
+    solve 4 data
+    |> should equal expected
+
+[<Theory>]
+[<InlineData("mjqjpqmgbljsphdztnvjfqwrcgsmlb",19)>]
+[<InlineData("bvwbjplbgvbhsrlpgdmjqwftvncz",23)>]
+[<InlineData("nppdvjthqldpwncqszvftbrmjlhg",23)>]
+[<InlineData("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg",29)>]
+[<InlineData("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw",26)>]
+let ``test part2`` data expected =
+    solve 14 data
     |> should equal expected

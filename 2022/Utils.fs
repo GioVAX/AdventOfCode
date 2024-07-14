@@ -3,11 +3,10 @@ module Utils
 open FsHttp
 open System.Text.RegularExpressions
 
-let aoc_token="53616c7465645f5f784d956d893ee479aa2364da0139bda2be94787aa306270be56b9f8f2b0126206c56b077212f25f504965884efa94a486117932768943add"
 let fetchDayInput day =
     http {
         GET $"https://adventofcode.com/2022/day/%d{day}/input"
-        Cookie "session" aoc_token
+        Cookie "session" Aoc.token
     }
     |> Request.send
     |> Response.toText

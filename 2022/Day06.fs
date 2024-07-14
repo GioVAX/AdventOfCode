@@ -15,11 +15,15 @@ let findMarker n s =
     |> Seq.findIndex (containsNoRepeated n)
 
 
-let part1 n s =
+let solve n s =
     s
     |> findMarker n
     |> (+) n
 
 let runPart1 =
     fetchDayInput 6
-    |> part1 4
+    |> solve 4
+
+let runPart2 =
+    fetchDayInput 6
+    |> solve 14
