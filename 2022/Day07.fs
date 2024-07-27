@@ -10,9 +10,11 @@ type File = {
     | File of File
     | Dir of Dir
 
-type Command =
+type Line =
     | Cd of dest:string
     | Ls
+    | FileInfo of size:int * name:string
+    | Directory of name:string
 
 type ParseStatus = {
     currentDir: File
@@ -20,11 +22,18 @@ type ParseStatus = {
 
 let root = {files=Map.empty}
 
-let (|Command|_|) input =
-    match input with
-    | Regex "\$ cd (.*)$" [path] -> Some (Cd path)
-    | "$ ls\n" -> Some Ls
-    | _ -> None
+let(|Line|_|) input =
+    match input with 
+    | Regex "\$ cd (.*)$" [path] ->
+        Some (Cd path)
+    | "$ ls\n" ->
+        Some Ls
+    | Regex "dir (.*)$" [dirName] ->
+        Some (Directory dirName)
+    | Regex "(\d*) (.*)$" [size; name] ->
+        Some (FileInfo (int size , name))
+    | _ ->
+        None
 
 let cd currDir path =
     match path with

@@ -43,15 +43,34 @@ let ``input lines include the trailing \n`` () =
     |> String.exists ((=) '\n')
 
 [<Fact>]
-let ``command parse`` () =
+let ``parse cd line`` () =
     match "$ cd /\n" with
-    | Command c -> c |> should equal (Cd(dest = "/"))
+    | Line l -> 
+        l |> should equal (Cd(dest = "/"))
     | _ -> failwith "failed on cd"
 
+[<Fact>]
+let ``parse ls line`` () =
     match "$ ls\n" with
-    | Command c -> c |> should equal Ls
+    | Line l -> 
+        l |> should equal Ls
     | _ -> failwith "failed on ls"
 
+[<Fact>]
+let ``parse file line`` () =
+    match "14848514 b.txt\n" with
+    | Line l -> 
+        l |> should equal (FileInfo(14848514, "b.txt"))
+    | _ -> failwith "failed on fileinfo"
+    
+[<Fact>]
+let ``parse dir line`` () =
+    match "dir foo\n" with
+    | Line l -> 
+        l |> should equal (Directory("foo"))
+    | _ -> failwith "failed on dir info"
+    
+    
 [<Fact>]
 let ``executing "cd /" moves to the root`` () =
     let currDir =
@@ -80,7 +99,7 @@ let ``executing cd to existing dir should work`` () =
     destDir |> should not' (equal root)
 
 [<Fact>]
-let ``executing cd to existing dir should throw`` () =
+let ``executing cd to not existing dir should throw`` () =
     let subdir =
         { files = Map.empty |> Map.add "z" (File { size = 2 }) }
 
