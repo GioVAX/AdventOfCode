@@ -121,3 +121,19 @@ let ``executing cd to not existing dir should throw`` () =
 
     (fun () -> cd currDir "k" |> ignore) 
         |> should (throwWithMessage "folder k not found") typeof<System.Exception>
+
+[<Fact>]
+let ``cd ..`` () =
+    let tmpDir =
+        { 
+            parent=Parent root;
+            files = Map.empty |> Map.add "x" (File { size = 1 })
+        }
+    let subdir =
+        { 
+            parent = Parent tmpDir;
+            files = Map.empty |> Map.add "z" (File { size = 2 }) 
+        } 
+    let currDir = {tmpDir with files = (Map.add "y" (Dir subdir) tmpDir.files) }
+
+    cd currDir ".." |> should equal root

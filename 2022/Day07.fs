@@ -47,6 +47,10 @@ let(|Line|_|) input =
 let cd currDir path =
     match path with
     | "/" -> root
+    | ".." -> 
+        match currDir.parent with
+        | Root -> currDir
+        | Parent p -> p
     | _ ->
         match Map.tryFind path currDir.files with
         | Some(Dir d) ->
