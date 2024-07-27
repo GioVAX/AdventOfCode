@@ -6,7 +6,7 @@ open Xunit
 open Utils
 open Day07
 
-let input = 
+let input =
     "$ cd /\n\
     $ ls\n\
     dir a\n\
@@ -45,11 +45,52 @@ let ``input lines include the trailing \n`` () =
 [<Fact>]
 let ``command parse`` () =
     match "$ cd /\n" with
-    | Command c ->
-        c |> should equal (Cd(dest="/"))
+    | Command c -> c |> should equal (Cd(dest = "/"))
     | _ -> failwith "failed on cd"
-        
+
     match "$ ls\n" with
-    | Command c ->
-        c |> should equal Ls
+    | Command c -> c |> should equal Ls
     | _ -> failwith "failed on ls"
+
+[<Fact>]
+let ``executing "cd /" moves to the root`` () =
+    let currDir =
+        { files = Map.empty |> Map.add "x" (File { size = 1 }) }
+
+    currDir |> should not' (equal root)
+
+    cd currDir "/" |> should equal root
+
+[<Fact>]
+let ``executing cd to existing dir should work`` () =
+    let subdir =
+        { files = Map.empty |> Map.add "z" (File { size = 2 }) }
+
+    let currDir =
+        { files =
+            Map.empty
+            |> Map.add "x" (File { size = 1 })
+            |> Map.add "y" (Dir subdir) }
+
+    currDir |> should not' (equal root)
+
+    let destDir = cd currDir "y"
+    
+    destDir |> should equal subdir
+    destDir |> should not' (equal root)
+
+[<Fact>]
+let ``executing cd to existing dir should throw`` () =
+    let subdir =
+        { files = Map.empty |> Map.add "z" (File { size = 2 }) }
+
+    let currDir =
+        { files =
+            Map.empty
+            |> Map.add "x" (File { size = 1 })
+            |> Map.add "y" (Dir subdir) }
+
+    currDir |> should not' (equal root)
+
+    (fun () -> cd currDir "k" |> ignore) 
+        |> should (throwWithMessage "folder k not found") typeof<System.Exception>
