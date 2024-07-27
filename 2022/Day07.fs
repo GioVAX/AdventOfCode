@@ -4,7 +4,13 @@ open Utils
 
 type File = {
     size: int;
-} and Dir = {
+} 
+
+type ParentDir =
+    | Root
+    | Parent of Dir
+and Dir = {
+    parent: ParentDir
     files: Map<string, Node>
 } and Node = 
     | File of File
@@ -20,7 +26,10 @@ type ParseStatus = {
     currentDir: File
 }
 
-let root = {files=Map.empty}
+let rec root = {
+    parent=Root; 
+    files=Map.empty
+    }
 
 let(|Line|_|) input =
     match input with 

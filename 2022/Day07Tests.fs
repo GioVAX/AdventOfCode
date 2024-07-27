@@ -74,23 +74,28 @@ let ``parse dir line`` () =
 [<Fact>]
 let ``executing "cd /" moves to the root`` () =
     let currDir =
-        { files = Map.empty |> Map.add "x" (File { size = 1 }) }
+        { 
+            parent = Parent root;
+            files = Map.empty |> Map.add "x" (File { size = 1 }) 
+        }
 
     currDir |> should not' (equal root)
-
     cd currDir "/" |> should equal root
 
 [<Fact>]
 let ``executing cd to existing dir should work`` () =
+    let tmpDir =
+        { 
+            parent=Parent root;
+            files = Map.empty |> Map.add "x" (File { size = 1 })
+        }
     let subdir =
-        { files = Map.empty |> Map.add "z" (File { size = 2 }) }
-
-    let currDir =
-        { files =
-            Map.empty
-            |> Map.add "x" (File { size = 1 })
-            |> Map.add "y" (Dir subdir) }
-
+        { 
+            parent = Parent tmpDir;
+            files = Map.empty |> Map.add "z" (File { size = 2 }) 
+        } 
+    let currDir = {tmpDir with files = (Map.add "y" (Dir subdir) tmpDir.files) }
+    
     currDir |> should not' (equal root)
 
     let destDir = cd currDir "y"
@@ -100,14 +105,17 @@ let ``executing cd to existing dir should work`` () =
 
 [<Fact>]
 let ``executing cd to not existing dir should throw`` () =
+    let tmpDir =
+        { 
+            parent=Parent root;
+            files = Map.empty |> Map.add "x" (File { size = 1 })
+        }
     let subdir =
-        { files = Map.empty |> Map.add "z" (File { size = 2 }) }
-
-    let currDir =
-        { files =
-            Map.empty
-            |> Map.add "x" (File { size = 1 })
-            |> Map.add "y" (Dir subdir) }
+        { 
+            parent = Parent tmpDir;
+            files = Map.empty |> Map.add "z" (File { size = 2 }) 
+        } 
+    let currDir = {tmpDir with files = (Map.add "y" (Dir subdir) tmpDir.files) }
 
     currDir |> should not' (equal root)
 
