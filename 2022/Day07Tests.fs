@@ -62,6 +62,11 @@ let ``parse file line`` () =
     | Line l -> 
         l |> should equal (FileInfo(14848514, "b.txt"))
     | _ -> failwith "failed on fileinfo"
+
+    match "8504156 c.dat\n" with
+    | Line l -> 
+        l |> should equal (FileInfo(8504156, "c.dat"))
+    | _ -> failwith "failed on fileinfo"
     
 [<Fact>]
 let ``parse dir line`` () =
@@ -137,3 +142,22 @@ let ``cd ..`` () =
     let currDir = {tmpDir with files = (Map.add "y" (Dir subdir) tmpDir.files) }
 
     cd currDir ".." |> should equal root
+
+[<Fact>]
+let ``parse input lines produces Line array`` () =
+    input.Split '\n'
+    |> Array.take 5
+    |> Array.map convertToLine
+    |> should equal 
+        [|
+            Cd "/";
+            Ls;
+            Directory "a";
+            FileInfo (14848514, "b.txt");
+            FileInfo (8504156,"c.dat")
+        |]
+
+[<Fact>]
+let ``convertToLine can fail`` () =
+    (fun () -> convertToLine "abracadabra" |> ignore)
+    |> should (throwWithMessage "bad input abracadabra") typeof<System.Exception>

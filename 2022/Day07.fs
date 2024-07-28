@@ -31,16 +31,16 @@ let rec root = {
     files=Map.empty
     }
 
-let(|Line|_|) input =
-    match input with 
-    | Regex "\$ cd (.*)$" [path] ->
-        Some (Cd path)
-    | "$ ls\n" ->
+let (|Line|_|) = function
+    | Regex "^\$ cd (.+)$" [path] ->
+        Cd path |> Some
+    | "$ ls\n"
+    | "$ ls" ->
         Some Ls
-    | Regex "dir (.*)$" [dirName] ->
-        Some (Directory dirName)
-    | Regex "(\d*) (.*)$" [size; name] ->
-        Some (FileInfo (int size , name))
+    | Regex "^dir (.+)$" [dirName] ->
+        Directory dirName |> Some
+    | Regex "^(\d+) (.+)$" [size; name] ->
+        FileInfo (int size , name)  |> Some
     | _ ->
         None
 
@@ -59,6 +59,11 @@ let cd currDir path =
         | None ->
             "folder " + path + " not found"
             |> failwith
+
+let convertToLine input = 
+    match input with
+    | Line l -> l
+    | _ -> failwith ("bad input " + input)
 
 // let executeCmd status cmd = 
 //     match cmd with
