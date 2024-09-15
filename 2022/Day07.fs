@@ -13,8 +13,8 @@ and Dir = {
     parent: ParentDir
     files: Map<string, Node>
 } and Node = 
-    | File of File
-    | Dir of Dir
+    | FileNode of File
+    | DirNode of Dir
 
 type Line =
     | Cd of dest:string
@@ -53,7 +53,7 @@ let cd currDir path =
         | Parent p -> p
     | _ ->
         match Map.tryFind path currDir.files with
-        | Some(Dir d) ->
+        | Some(DirNode d) ->
             d
         | Some _ 
         | None ->
@@ -65,13 +65,14 @@ let convertToLine input =
     | Line l -> l
     | _ -> failwith ("bad input " + input)
 
-// let executeCmd status cmd = 
-//     match cmd with
-//     | Utils.Regex "$ cd (.*)" path ->
-//         ()
-//     | "$ ls" ->
-//         ()
-
-
-
-
+let executeLine currentDir = function
+    | Cd path ->
+        cd currentDir path
+    | Ls ->
+        currentDir
+    | FileInfo (size, name) ->
+        let f = FileNode {size=size}
+        {currentDir with files = Map.add name f currentDir.files}
+    | Directory name ->
+        let d = DirNode {parent=Parent currentDir; files=Map.empty}
+        {currentDir with files = Map.add name d currentDir.files}

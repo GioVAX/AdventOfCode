@@ -81,7 +81,7 @@ let ``executing "cd /" moves to the root`` () =
     let currDir =
         { 
             parent = Parent root;
-            files = Map.empty |> Map.add "x" (File { size = 1 }) 
+            files = Map.empty |> Map.add "x" (FileNode { size = 1 }) 
         }
 
     currDir |> should not' (equal root)
@@ -92,14 +92,14 @@ let ``executing cd to existing dir should work`` () =
     let tmpDir =
         { 
             parent=Parent root;
-            files = Map.empty |> Map.add "x" (File { size = 1 })
+            files = Map.empty |> Map.add "x" (FileNode { size = 1 })
         }
     let subdir =
         { 
             parent = Parent tmpDir;
-            files = Map.empty |> Map.add "z" (File { size = 2 }) 
+            files = Map.empty |> Map.add "z" (FileNode { size = 2 }) 
         } 
-    let currDir = {tmpDir with files = (Map.add "y" (Dir subdir) tmpDir.files) }
+    let currDir = {tmpDir with files = (Map.add "y" (DirNode subdir) tmpDir.files) }
     
     currDir |> should not' (equal root)
 
@@ -113,14 +113,14 @@ let ``executing cd to not existing dir should throw`` () =
     let tmpDir =
         { 
             parent=Parent root;
-            files = Map.empty |> Map.add "x" (File { size = 1 })
+            files = Map.empty |> Map.add "x" (FileNode { size = 1 })
         }
     let subdir =
         { 
             parent = Parent tmpDir;
-            files = Map.empty |> Map.add "z" (File { size = 2 }) 
+            files = Map.empty |> Map.add "z" (FileNode { size = 2 }) 
         } 
-    let currDir = {tmpDir with files = (Map.add "y" (Dir subdir) tmpDir.files) }
+    let currDir = {tmpDir with files = (Map.add "y" (DirNode subdir) tmpDir.files) }
 
     currDir |> should not' (equal root)
 
@@ -132,14 +132,14 @@ let ``cd ..`` () =
     let tmpDir =
         { 
             parent=Parent root;
-            files = Map.empty |> Map.add "x" (File { size = 1 })
+            files = Map.empty |> Map.add "x" (FileNode { size = 1 })
         }
     let subdir =
         { 
             parent = Parent tmpDir;
-            files = Map.empty |> Map.add "z" (File { size = 2 }) 
+            files = Map.empty |> Map.add "z" (FileNode { size = 2 }) 
         } 
-    let currDir = {tmpDir with files = (Map.add "y" (Dir subdir) tmpDir.files) }
+    let currDir = {tmpDir with files = (Map.add "y" (DirNode subdir) tmpDir.files) }
 
     cd currDir ".." |> should equal root
 
@@ -161,3 +161,65 @@ let ``parse input lines produces Line array`` () =
 let ``convertToLine can fail`` () =
     (fun () -> convertToLine "abracadabra" |> ignore)
     |> should (throwWithMessage "bad input abracadabra") typeof<System.Exception>
+
+[<Fact>]
+let ``executeCmd cd changes the current dir`` () =
+    let tmpDir =
+        { 
+            parent=Parent root;
+            files = Map.empty |> Map.add "x" (FileNode { size = 1 })
+        }
+    let subdir =
+        { 
+            parent = Parent tmpDir;
+            files = Map.empty |> Map.add "z" (FileNode { size = 2 }) 
+        } 
+    let currDir = {tmpDir with files = (Map.add "y" (DirNode subdir) tmpDir.files) }
+
+    executeLine currDir (Cd "y")
+    |> should equal subdir
+
+[<Fact>]
+let ``executeCmd ls does NOT changes the current dir`` () =
+    let tmpDir =
+        { 
+            parent=Parent root;
+            files = Map.empty |> Map.add "x" (FileNode { size = 1 })
+        }
+    let subdir =
+        { 
+            parent = Parent tmpDir;
+            files = Map.empty |> Map.add "z" (FileNode { size = 2 }) 
+        } 
+    let currDir = {tmpDir with files = (Map.add "y" (DirNode subdir) tmpDir.files) }
+
+    executeLine currDir Ls
+    |> should equal currDir
+
+[<Fact>]
+let ``executeCmd file adds a file to the curr dir`` () =
+    let tmpDir =
+        { 
+            parent=Parent root;
+            files = Map.empty |> Map.add "x" (FileNode { size = 1 })
+        }
+    let subdir =
+        { 
+            parent = Parent tmpDir;
+            files = Map.empty |> Map.add "z" (FileNode { size = 2 }) 
+        } 
+    let currDir = {tmpDir with files = (Map.add "y" (DirNode subdir) tmpDir.files) }
+    currDir.files |> should haveCount 2
+
+    let result = executeLine currDir (FileInfo (1,"hello")) 
+    // |> should equal currDir
+
+    currDir.files |> should haveCount 2
+    result.files |> should haveCount 3
+
+    let list = result.files |> Map.toList
+    
+    list |> should contain ("y", DirNode(subdir))
+    list |> should contain ("hello", FileNode({size=1}))
+    list |> should contain ("x", FileNode({size=1}))
+    
