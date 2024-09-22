@@ -52,3 +52,9 @@ let ``understanding slicing`` () =
 
     actual[0,*] |> should equal [|3;0;3;7;3|]
     actual[*,1] |> should equal [|0;5;5;3;5|]
+
+[<Fact>]
+let ``count visible trees`` () =
+    [|3;0;3;7;3|]
+    |> countVisibleTrees
+    |> should equal 2
