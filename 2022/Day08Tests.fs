@@ -32,11 +32,11 @@ let ``input lines do not include leading spaces`` () =
 [<Fact>]
 let ``input is converted to the right 2d array`` () =
     let expected = array2D [
-            ['3';'0';'3';'7';'3'];
-            ['2';'5';'5';'1';'2'];
-            ['6';'5';'3';'3';'2'];
-            ['3';'3';'5';'4';'9'];
-            ['3';'5';'3';'9';'0']]
+            [3;0;3;7;3];
+            [2;5;5;1;2];
+            [6;5;3;3;2];
+            [3;3;5;4;9];
+            [3;5;3;9;0]]
 
     let actual = 
         input
@@ -50,5 +50,5 @@ let ``understanding slicing`` () =
         input
         |> inputTo2dArray
 
-    actual[0,*] |> should equal [|'3';'0';'3';'7';'3'|]
-    actual[*,1] |> should equal [|'0';'5';'5';'3';'5'|]
+    actual[0,*] |> should equal [|3;0;3;7;3|]
+    actual[*,1] |> should equal [|0;5;5;3;5|]
